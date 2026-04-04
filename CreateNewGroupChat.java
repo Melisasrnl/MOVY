@@ -65,7 +65,7 @@ public class CreateNewGroupChat {
         HBox otherPPOptions = new HBox(10);
         AnchorPane.setTopAnchor(otherPPOptions, 240.0);
         AnchorPane.setLeftAnchor(otherPPOptions, 20.0);
-        Button searchMembers = new Button("Search to Add Members.");
+        Button searchMembers = new Button("Search to Add Members...");
         AnchorPane.setLeftAnchor(searchMembers, 20.0);
         AnchorPane.setRightAnchor(searchMembers, 20.0);
         AnchorPane.setTopAnchor(searchMembers, 400.0);
