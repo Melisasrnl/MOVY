@@ -14,27 +14,28 @@ import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
-public class TestPage extends Application {
+public class TestPage {
     public String selectedAge;
     public String selectedAppropriate;
     public ArrayList<String> selectedGenres;
 
-    public static void main(String[] args) {
-        launch(args);
+
+    public static void choices(ArrayList<String> chosen) {
     }
 
-    public static void choose(ArrayList<String> chosen) {
-    }
+    public static Scene choose(Stage primaryStage) {
 
-    @Override
-    public void start(Stage arg0) throws Exception {
-        arg0.setOnCloseRequest(e -> Platform.exit());
+        HBox topMenu = TopMenu.createTopMenu(primaryStage);
+        AnchorPane.setTopAnchor(topMenu, 10.0);
+        AnchorPane.setLeftAnchor(topMenu, 5.0);
+        AnchorPane.setRightAnchor(topMenu, 5.0);
         // Layout for the go back button
         VBox back = new VBox();
         Button goBack = new Button("←");
@@ -125,45 +126,22 @@ public class TestPage extends Application {
         VBox quiz = new VBox(10, header, subheader, quest1, quest2, quest3);
         // Implementing the button that will finish the quiz
         Button finish = new Button("I am ready!");
-        finish.setOnAction(new GoToRecommendedHandler(arg0));;
+        finish.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event){
+                primaryStage.setScene(RecommendedPage.choose(primaryStage));
+            }
+        });
         finish.setStyle("-fx-background-color: #282B35;" + "-fx-text-fill: #EAEAEA;");
         finish.setFont(Font.font("Times New Roman", 18));
         VBox finishBox = new VBox(finish);
         finishBox.setAlignment(Pos.CENTER_RIGHT);
         // Putting everything together
         HBox contains = new HBox(40, back, quiz, finishBox);
-        VBox wholePage = new VBox(10, TopMenu.createTopMenu(), contains);
+        VBox wholePage = new VBox(10, topMenu, contains);
         wholePage.setStyle("-fx-background-color: #0B0F1A;");
         Scene testScene = new Scene(wholePage);
-        arg0.setMaximized(true);
-        arg0.setScene(testScene);
-        arg0.show();
+        return testScene;
 
     }
-    class GoToRecommendedHandler implements EventHandler<ActionEvent> {
-
-    private Stage currentStage;
-
-    public GoToRecommendedHandler(Stage stage) {
-        this.currentStage = stage;
-    }
-
-    @Override
-    public void handle(ActionEvent event) {
-        try {
-            // Create new page
-            RecommendedPage page = new RecommendedPage();
-
-            // New stage
-            Stage newStage = new Stage();
-            page.start(newStage);
-
-            // Close current stage
-            currentStage.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-}
 }
