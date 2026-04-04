@@ -59,6 +59,11 @@ public class MemberSelectionGroupChat {
         Button createGroup = new Button("Create Chat");
         AnchorPane.setRightAnchor(createGroup, 20.0);
         AnchorPane.setBottomAnchor(createGroup, 0.0);    
+        createGroup.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent event) {
+                // new scene will be added
+            }
+        });
 
         //followers and followings will be recommended automatically
         String ane[] = { "m", "a", "n", "i", "f", "e", "s", "t", "a", "tt" };
