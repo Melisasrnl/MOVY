@@ -1,5 +1,3 @@
-import java.nio.file.attribute.PosixFileAttributeView;
-
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
