@@ -29,27 +29,34 @@ public class CreateNewGroupChat {
     public static Scene createNewGroupChatScene(Stage stage) {
         AnchorPane root = new AnchorPane();
         HBox topMenu = TopMenu.createTopMenu(stage);
+        AnchorPane.setTopAnchor(topMenu, 10.0);
+        AnchorPane.setLeftAnchor(topMenu, 5.0);
+        AnchorPane.setRightAnchor(topMenu, 5.0);
+
+        AnchorPane contentBox = new AnchorPane();
+        contentBox.setPadding(new Insets(20));
+        AnchorPane.setTopAnchor(contentBox, 55.0);
+        AnchorPane.setLeftAnchor(contentBox, 15.0);
+        AnchorPane.setRightAnchor(contentBox, 15.0);
+        AnchorPane.setBottomAnchor(contentBox, 15.0);
         Label newGroupChatLbl = new Label("New Group Chat");
         AnchorPane.setTopAnchor(newGroupChatLbl, 20.0);
         AnchorPane.setLeftAnchor(newGroupChatLbl, 20.0);
-        newGroupChatLbl.setStyle("-fx-font-size: 50px;"); 
+        newGroupChatLbl.setStyle("-fx-font-size: 30px;"); 
         TextField chatName = new TextField("Write Group Name...");
-        AnchorPane.setTopAnchor(chatName, 40.0);
+        AnchorPane.setTopAnchor(chatName, 70.0);
         AnchorPane.setLeftAnchor(chatName, 20.0);
         AnchorPane.setRightAnchor(chatName, 20.0);
         // buttons are not working
         Button publicBtn = new Button("Public");
-        AnchorPane.setTopAnchor(publicBtn, 100.0);
+        AnchorPane.setTopAnchor(publicBtn, 120.0);
         AnchorPane.setLeftAnchor(publicBtn, 20.0);
-        publicBtn.setPrefWidth(120);
-        publicBtn.setPrefHeight(50);
         Button privateBtn = new Button("Private");
-        AnchorPane.setTopAnchor(privateBtn, 100.0);
+        AnchorPane.setTopAnchor(privateBtn, 120.0);
         AnchorPane.setLeftAnchor(privateBtn, 120.0);
-        privateBtn.setPrefWidth(120);
-        privateBtn.setPrefHeight(50);
         Label choosePPLabel = new Label("Choose a Profile Photo:");
-        AnchorPane.setTopAnchor(choosePPLabel, 130.0);
+        choosePPLabel.setStyle("-fx-font-size: 20px;");
+        AnchorPane.setTopAnchor(choosePPLabel, 160.0);
         AnchorPane.setLeftAnchor(choosePPLabel, 20.0);
         // these will be modified after the picture URL become available
         HBox colorIconsForPP = new HBox(10);
@@ -58,17 +65,18 @@ public class CreateNewGroupChat {
         HBox otherPPOptions = new HBox(10);
         AnchorPane.setTopAnchor(otherPPOptions, 240.0);
         AnchorPane.setLeftAnchor(otherPPOptions, 20.0);
-        Button searchMembers = new Button("Search to Add Members...");
-        AnchorPane.setTopAnchor(searchMembers, 400.0);
+        Button searchMembers = new Button("Search to Add Members.");
         AnchorPane.setLeftAnchor(searchMembers, 20.0);
         AnchorPane.setRightAnchor(searchMembers, 20.0);
+        AnchorPane.setTopAnchor(searchMembers, 400.0);
         searchMembers.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
                 // a new scene will be called
             }
         });
-        root.getChildren().addAll(newGroupChatLbl, chatName, publicBtn, privateBtn, choosePPLabel, colorIconsForPP,
-                searchMembers);
+        contentBox.getChildren().addAll(newGroupChatLbl, chatName, publicBtn, privateBtn, choosePPLabel, colorIconsForPP,
+                otherPPOptions, searchMembers);
+        root.getChildren().addAll(topMenu, contentBox);
         return new Scene(root);
 
     }
