@@ -45,6 +45,7 @@ public class SearchChats {
         Label titleLabel = new Label("Search Chats");
         titleLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
         TextField searchField = new TextField();
+        //the searching logic will be added, results will be displayed in boxes under the bar
         searchField.setPromptText("Search...");
         searchField.setPrefWidth(300);
         VBox.setMargin(titleLabel, new Insets(0, 0, 10, 0));
@@ -71,6 +72,7 @@ public class SearchChats {
         HBox chats = new HBox(10);
         chatRow.setPadding(new Insets(5));
         chatRow.setStyle("-fx-border-color: lightgray; -fx-border-radius: 5; -fx-border-width: 1;");*/
+        //actual chat names will be replaced
         String ane[] = { "m", "a", "n", "i", "f", "e", "s", "t","a","tt" };
         for (String harf : ane) {
             HBox chatRow = new HBox(20);
