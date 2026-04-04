@@ -110,7 +110,7 @@ public class TopMenu {
         recommendButton.setPadding(new Insets(0, 0, 0, 10));
         recommendButton.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent event) {
-                // new scene will be added
+                stage.setScene(TestPage.choose(stage));
                 System.out.println("recommend me is working");
             }
         });
