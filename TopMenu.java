@@ -46,7 +46,7 @@ public class TopMenu {
         userButton.setPadding(new Insets(0, 10, 0, 0));
         userButton.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                // new scene will be added
+                stage.setScene(ProfilePage.createProfilePageScene(stage));
                 System.out.println("username button is working");
             }
         });
