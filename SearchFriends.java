@@ -31,7 +31,7 @@ public class SearchFriends extends Application{
         Button user4= new Button("melisa");
         user4.setPrefSize(1200, 100);
         user4.setStyle("-fx-background-color: #282B35;"+"-fx-text-fill: #EAEAEA;");
-        VBox contains= new VBox(50,TopMenu.createTopMenu(), searchFriend, user1, user2, user3, user4);
+        VBox contains= new VBox(50, searchFriend, user1, user2, user3, user4);
         contains.setStyle("-fx-background-color: #0B0F1A;");
         contains.setMaxWidth(Double.MAX_VALUE);
         Scene testScene= new Scene(contains);
