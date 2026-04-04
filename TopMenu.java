@@ -1,6 +1,9 @@
+import java.nio.file.attribute.PosixFileAttributeView;
+
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuButton;
@@ -10,6 +13,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.scene.input.MouseEvent;
 import javafx.geometry.Insets;
@@ -17,18 +22,21 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.geometry.Pos;
 
 public class TopMenu {
     // returns the topmenu
-    public static HBox createTopMenu() {
+    public static HBox createTopMenu(Stage stage) {
 
         HBox topMenu = new HBox(10);
         topMenu.setStyle("-fx-background-color: #0B0F1A; -fx-text-fill: white;");
         topMenu.setPadding(new Insets(5));
+        topMenu.setAlignment(Pos.CENTER_LEFT);
 
         // a circle is used temporarily instead of a profile picture, the radius might
         // be modified
         Circle userPPCircle = new Circle(18, Color.DODGERBLUE);
+        userPPCircle.setStroke(Color.BLACK);
 
         // username will be modified
         Button userButton = new Button("ceren");
@@ -84,14 +92,14 @@ public class TopMenu {
 
         searchChats.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent event) {
-                // new scene will be added
+                stage.setScene(SearchChats.createSearchChatsScene(stage));
                 System.out.println("searching chats is working");
             }
         });
 
         myChats.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent event) {
-                // new scene will be added
+                stage.setScene(MyChats.createMyChatsScene(stage));
                 System.out.println("mychats button is working");
             }
         });
