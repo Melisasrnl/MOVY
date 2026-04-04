@@ -36,7 +36,7 @@ public class SearchEngine extends Application{
         movie4.setStyle("-fx-background-color: #282B35;"+"-fx-text-fill: #EAEAEA;");
         HBox movieContainer= new HBox(50,movie1, movie2, movie3, movie4);
         movieContainer.setAlignment(Pos.CENTER);
-        VBox contains= new VBox(50,TopMenu.createTopMenu(), searchEngine, movieContainer);
+        VBox contains= new VBox(50, searchEngine, movieContainer);
         contains.setStyle("-fx-background-color: #0B0F1A;");
         contains.setMaxWidth(Double.MAX_VALUE);
         Scene testScene= new Scene(contains);
