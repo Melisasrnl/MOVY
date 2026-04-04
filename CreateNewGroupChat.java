@@ -71,7 +71,7 @@ public class CreateNewGroupChat {
         AnchorPane.setTopAnchor(searchMembers, 400.0);
         searchMembers.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
-                // a new scene will be called
+                stage.setScene(MemberSelectionGroupChat.createMemberSelectionGroupChatscene(stage));
             }
         });
         contentBox.getChildren().addAll(newGroupChatLbl, chatName, publicBtn, privateBtn, choosePPLabel, colorIconsForPP,
