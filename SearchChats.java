@@ -1,7 +1,10 @@
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Random;
+
+
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.geometry.Pos;
@@ -27,10 +30,10 @@ import javafx.stage.Stage;
 import javafx.scene.input.MouseEvent;
 
 public class SearchChats {
-    public static Scene createSearchChatsScene(Stage primaryStage) {
+    public  Scene createSearchChatsScene(Stage primaryStage) {
         AnchorPane root = new AnchorPane();
         root.setStyle("-fx-background-color: #0B0F1A;");
-        HBox topMenu = TopMenu.createTopMenu(primaryStage);
+        HBox topMenu = new TopMenu().createTopMenu(primaryStage);
         AnchorPane.setTopAnchor(topMenu, 10.0);
         AnchorPane.setLeftAnchor(topMenu, 5.0);
         AnchorPane.setRightAnchor(topMenu, 5.0);
@@ -45,7 +48,6 @@ public class SearchChats {
         Label titleLabel = new Label("Search Chats");
         titleLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
         TextField searchField = new TextField();
-        //the searching logic will be added, results will be displayed in boxes under the bar
         searchField.setPromptText("Search...");
         searchField.setPrefWidth(300);
         VBox.setMargin(titleLabel, new Insets(0, 0, 10, 0));
@@ -72,7 +74,6 @@ public class SearchChats {
         HBox chats = new HBox(10);
         chatRow.setPadding(new Insets(5));
         chatRow.setStyle("-fx-border-color: lightgray; -fx-border-radius: 5; -fx-border-width: 1;");*/
-        //actual chat names will be replaced
         String ane[] = { "m", "a", "n", "i", "f", "e", "s", "t","a","tt" };
         for (String harf : ane) {
             HBox chatRow = new HBox(20);
