@@ -8,6 +8,7 @@ public class User {
     private long userID;
     private String email;
     private String bio;
+    private String profilePhotoPath; //url
 
     //movies will be pulled from the database by name or id
     //for now we will store it as String
@@ -27,6 +28,7 @@ public class User {
         this.username = aUserName;
         this.email = anEmail;
         this.userID = userID;
+        this.profilePhotoPath = ProfilePhoto.DEFAULT.getUrl(); //default profile photo
     }
 
     //getters
@@ -76,5 +78,13 @@ public class User {
 
     public List<Long> getChats() {
         return chats;
+    }
+
+    public String getProfilePhotoPath() {
+        return profilePhotoPath;
+    }
+ 
+    public void setProfilePhotoPath(String path) {
+        this.profilePhotoPath = path;
     }
 }
