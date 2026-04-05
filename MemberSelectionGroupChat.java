@@ -26,9 +26,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 public class MemberSelectionGroupChat {
-    public static Scene createMemberSelectionGroupChatscene(Stage stage) {
+    public  Scene createMemberSelectionGroupChatscene(Stage stage) {
         AnchorPane root = new AnchorPane();
-        HBox topMenu = TopMenu.createTopMenu(stage);
+        HBox topMenu = new TopMenu().createTopMenu(stage);
         AnchorPane.setTopAnchor(topMenu, 10.0);
         AnchorPane.setLeftAnchor(topMenu, 5.0);
         AnchorPane.setRightAnchor(topMenu, 5.0);
@@ -58,7 +58,7 @@ public class MemberSelectionGroupChat {
 
         Button createGroup = new Button("Create Chat");
         AnchorPane.setRightAnchor(createGroup, 20.0);
-        AnchorPane.setBottomAnchor(createGroup, 0.0);    
+        AnchorPane.setBottomAnchor(createGroup, 0.0);
         createGroup.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
                 // new scene will be added
