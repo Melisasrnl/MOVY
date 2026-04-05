@@ -24,10 +24,10 @@ import javafx.stage.Stage;
 import javafx.scene.input.MouseEvent;
 
 public class ProfilePage {
-    public static Scene createProfilePageScene(Stage stage) {
+    public  Scene createProfilePageScene(Stage stage) {
         AnchorPane root = new AnchorPane();
         root.setStyle("-fx-background-color: #0B0F1A;");
-        HBox topMenu = TopMenu.createTopMenu(stage);
+        HBox topMenu = new TopMenu().createTopMenu(stage);
         AnchorPane.setTopAnchor(topMenu, 10.0);
         AnchorPane.setLeftAnchor(topMenu, 5.0);
         AnchorPane.setRightAnchor(topMenu, 5.0);
@@ -50,7 +50,7 @@ public class ProfilePage {
         edit.setStyle("-fx-background-color: #0B0F1A; -fx-text-fill: #EAEAEA");
         edit.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
-                stage.setScene(EditProfile.createEditProfileScene(stage));
+                stage.setScene(new EditProfile().createEditProfileScene(stage));
             }
         });
         Label username = new Label("ceren");
