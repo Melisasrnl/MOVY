@@ -40,6 +40,7 @@ public class MoviePage {
     @FXML private Button aFriendBtn; 
     @FXML private Button markAsWatchedBtn; 
     @FXML private ImageView markAsWatchedIcon; 
+    @FXML private Button backBtn;
 
     private boolean isMovieWatched = false;
     private Image unwatchedImage;
@@ -48,6 +49,18 @@ public class MoviePage {
     private boolean isMovieLiked = false;
     private Image notLikedImage;
     private Image likedImage;
+
+    private User currentUser;
+    private Movie currentMovie;
+
+    //MainPageden gelen kullanıcı ve film bilgilerini alan metot
+    public void setData(User user, Movie movie) {
+        this.currentUser = user;
+        this.currentMovie = movie;
+        
+        
+        //later: if(currentMovie != null) movieNameLbl.setText(currentMovie.getTitle());
+    }
 
     //at first the movie hasnt been watched or added to the favorites
     @FXML
@@ -66,6 +79,26 @@ public class MoviePage {
         if (commentBtn != null) {
             commentBtn.setOnAction(event -> handleGoToComments());
         }
+        if (backBtn != null) {
+            backBtn.setOnAction(event -> handleGoToMain());
+        }
+    }
+
+    private void handleGoToMain() {
+        try {
+            Stage currentStage = (Stage) backBtn.getScene().getWindow();
+            MainPage mainPage = new MainPage();
+            Scene mainScene = mainPage.createMainPageScene(currentStage);
+            
+            mainPage.setData(currentUser, null);
+            
+            currentStage.setScene(mainScene);
+            currentStage.setFullScreen(true);
+
+        } catch (Exception e) {
+            System.out.println("cant go to mainPage");
+            e.printStackTrace();
+        }
     }
 
     //setData belki burada olucak
@@ -74,6 +107,8 @@ public class MoviePage {
             Stage currentStage = (Stage) commentBtn.getScene().getWindow();
             CommentsPage commentsPage = new CommentsPage();
             Scene commentsScene = commentsPage.createCommentsPageScene(currentStage);
+            commentsPage.setData(currentUser, currentMovie);
+            
             currentStage.setScene(commentsScene);
             currentStage.setFullScreen(true);
 
@@ -121,6 +156,7 @@ public class MoviePage {
         recommendToListVBox.setManaged(!isVisible);
     }
 
+    //creates scene with topmenu bar
     public Scene createAboutMovieScene(Stage primaryStage) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/movies/moviePage.fxml"));
         BorderPane root = loader.load();
@@ -130,7 +166,6 @@ public class MoviePage {
 
         Scene scene = new Scene(root);
         primaryStage.setTitle("About Movie Page");
-        primaryStage.setFullScreen(true);
         return scene;
     }
     

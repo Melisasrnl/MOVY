@@ -88,6 +88,13 @@
             <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
          </padding>
          <children>
+
+            <Button fx:id="backBtn" mnemonicParsing="false" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold; -fx-cursor: hand;" text="&lt;">
+               <VBox.margin>
+                  <Insets bottom="10.0" />
+               </VBox.margin>
+            </Button>
+            
             <HBox prefHeight="13.0" prefWidth="360.0" spacing="10.0">
                <children>
                   <Label fx:id="movieNameLbl" prefHeight="24.0" text="movieName" textFill="WHITE">
