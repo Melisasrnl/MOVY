@@ -28,19 +28,19 @@ import javafx.scene.input.MouseEvent;
 
 public class MyChats {
 
-    public static Scene createMyChatsScene(Stage stage) {
+    public Scene createMyChatsScene(Stage stage) {
         AnchorPane root = new AnchorPane();
-        HBox topMenu = TopMenu.createTopMenu(stage);
-        AnchorPane.setTopAnchor(topMenu, 8.0);
-        AnchorPane.setLeftAnchor(topMenu, 4.0);
-        AnchorPane.setRightAnchor(topMenu, 4.0);
+        HBox topMenu = new TopMenu().createTopMenu(stage);
+        AnchorPane.setTopAnchor(topMenu, 10.0);
+        AnchorPane.setLeftAnchor(topMenu, 5.0);
+        AnchorPane.setRightAnchor(topMenu, 5.0);
 
         VBox contentBox = new VBox(10);
         contentBox.setPadding(new Insets(20));
-        AnchorPane.setTopAnchor(contentBox, 54.0);
-        AnchorPane.setLeftAnchor(contentBox, 16.0);
-        AnchorPane.setRightAnchor(contentBox, 16.0);
-        AnchorPane.setBottomAnchor(contentBox, 16.0);
+        AnchorPane.setTopAnchor(contentBox, 55.0);
+        AnchorPane.setLeftAnchor(contentBox, 15.0);
+        AnchorPane.setRightAnchor(contentBox, 15.0);
+        AnchorPane.setBottomAnchor(contentBox, 15.0);
 
         Label titleLabel = new Label("My Chats");
         titleLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
@@ -48,6 +48,12 @@ public class MyChats {
         createNewChatBtn.setStyle("-fx-font-weight: bold; -fx-font-size: 18px;");
         createNewChatBtn.setPrefSize(40, 40);
         createNewChatBtn.setTooltip(new Tooltip("Create New Group Chat"));
+        createNewChatBtn.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent e) {
+                stage.setScene(new CreateNewGroupChat().createNewGroupChatScene(stage));
+            }
+        });
+
         HBox titleLine = new HBox(10);
         titleLine.setAlignment(Pos.CENTER_LEFT);
         titleLabel.setMaxWidth(Double.MAX_VALUE);
@@ -69,9 +75,11 @@ public class MyChats {
             HBox chatRow = new HBox(20);
             chatRow.setPadding(new Insets(5));
             chatRow.setStyle("-fx-border-color: lightgray; -fx-border-radius: 5; -fx-border-width: 1;");
+            String thisHarf = harf;
             chatRow.setOnMouseClicked(new EventHandler<MouseEvent>() {
                 public void handle(MouseEvent e) {
-                    //bensu's page will be called
+                    stage.setScene(new InsideChat().createInsideChatScene(stage));
+                    System.out.println("Clicked: " + thisHarf);
                 }
             });
             // chats' pp will be used here
@@ -82,7 +90,7 @@ public class MyChats {
             lastMessage.setStyle("-fx-font-size: 12px;");
             VBox chatInfoBox = new VBox(3, harfs, lastMessage);
             chatInfoBox.setPrefWidth(200);
-            //member count will be corrected later on
+            // member count will be corrected later on
             Label memberCountLbl = new Label("122 members");
             VBox joinBox = new VBox(3, memberCountLbl);
             joinBox.setAlignment(Pos.CENTER_RIGHT);
