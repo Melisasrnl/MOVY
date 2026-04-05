@@ -24,8 +24,7 @@ import javafx.geometry.Pos;
 
 public class TopMenu {
     // returns the topmenu
-    public static HBox createTopMenu(Stage stage) {
-
+    public  HBox createTopMenu(Stage stage) {
         HBox topMenu = new HBox(10);
         topMenu.setStyle("-fx-background-color: #0B0F1A; -fx-text-fill: white;");
         topMenu.setPadding(new Insets(5));
@@ -44,7 +43,7 @@ public class TopMenu {
         userButton.setPadding(new Insets(0, 10, 0, 0));
         userButton.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                stage.setScene(ProfilePage.createProfilePageScene(stage));
+                stage.setScene(new ProfilePage().createProfilePageScene(stage));
                 System.out.println("username button is working");
             }
         });
@@ -90,14 +89,14 @@ public class TopMenu {
 
         searchChats.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent event) {
-                stage.setScene(SearchChats.createSearchChatsScene(stage));
+                stage.setScene(new SearchChats().createSearchChatsScene(stage));
                 System.out.println("searching chats is working");
             }
         });
 
         myChats.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent event) {
-                stage.setScene(MyChats.createMyChatsScene(stage));
+                stage.setScene(new MyChats().createMyChatsScene(stage));
                 System.out.println("mychats button is working");
             }
         });
@@ -108,7 +107,7 @@ public class TopMenu {
         recommendButton.setPadding(new Insets(0, 0, 0, 10));
         recommendButton.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent event) {
-                stage.setScene(TestPage.choose(stage));
+                stage.setScene(new TestPage().choose(stage));
                 System.out.println("recommend me is working");
             }
         });
