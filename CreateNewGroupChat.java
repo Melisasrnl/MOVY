@@ -26,9 +26,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 public class CreateNewGroupChat {
-    public static Scene createNewGroupChatScene(Stage stage) {
+    public  Scene createNewGroupChatScene(Stage stage) {
         AnchorPane root = new AnchorPane();
-        HBox topMenu = TopMenu.createTopMenu(stage);
+        HBox topMenu = new TopMenu().createTopMenu(stage);
         AnchorPane.setTopAnchor(topMenu, 10.0);
         AnchorPane.setLeftAnchor(topMenu, 5.0);
         AnchorPane.setRightAnchor(topMenu, 5.0);
@@ -71,7 +71,7 @@ public class CreateNewGroupChat {
         AnchorPane.setTopAnchor(searchMembers, 400.0);
         searchMembers.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
-                stage.setScene(MemberSelectionGroupChat.createMemberSelectionGroupChatscene(stage));
+                stage.setScene(new MemberSelectionGroupChat().createMemberSelectionGroupChatscene(stage));
             }
         });
         contentBox.getChildren().addAll(newGroupChatLbl, chatName, publicBtn, privateBtn, choosePPLabel, colorIconsForPP,
