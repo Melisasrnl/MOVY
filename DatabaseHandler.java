@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+
 /* If the user wants to create a new (only while users create their own table so this info is only for create table methods)
     table (Collection or new chat etc.) the name will be changed to small characters fully
     in order for the database to work case insensitive. Please make sure you have
@@ -17,7 +18,7 @@ import java.util.ArrayList;
 public class DatabaseHandler {
 
     //These are the information of our database to set the database url
-
+    
 
     //Combining the information above to form the database url
     private static final String DB_URL = "jdbc:mysql://" + HOST + ":" + PORT + "/" + DB_NAME + "?useSSL=true";
@@ -743,14 +744,19 @@ public class DatabaseHandler {
     //add new user
     public static boolean addUserToChat(Integer chatID, String user, Boolean isAdmin){
         String sql = "INSERT INTO " + chatID + "susers (username,isadmin) VALUES (?,?)";
+        String sqlTwo= "INSERT INTO " + user + "schats (chatid) VALUES (?)";
 
         try(Connection conn = connect();
-        PreparedStatement pstmt = conn.prepareStatement(sql)){
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        PreparedStatement pstmttwo = conn.prepareStatement(sqlTwo)){
 
             pstmt.setString(1, user);
             pstmt.setBoolean(2, isAdmin);
 
+            pstmttwo.setInt(1, chatID);
+
             pstmt.executeUpdate();
+            pstmttwo.executeUpdate();
 
             System.out.println("ADDED USER TO CHAT SUCCESSFULLY");
 
@@ -788,10 +794,101 @@ public class DatabaseHandler {
     }
 
     //delete chat
+    public static boolean deleteChat (Integer chatId){
 
-    //delete user
+        String sqlone = "SELECT username FROM " + chatId + "susers";
+        String sqltwo = "DELETE FROM chats WHERE id = ?";
+        String sqlthree = "DROP TABLE IF EXISTS " + chatId + "susers";
+        String sqlfour = "DROP TABLE IF EXISTS " + chatId + "smessages";
+
+        try(Connection conn = connect();
+        PreparedStatement pstmt = conn.prepareStatement(sqltwo);
+        Statement stmt = conn.createStatement()){
+
+            pstmt.setInt(1, chatId);
+
+            pstmt.executeUpdate();
+
+            ResultSet rs = stmt.executeQuery(sqlone);
+
+            while(rs.next()){
+
+                String sqlfive = "DELETE FROM " + rs.getString(1) + "schats WHERE chatid = ?";
+                try(PreparedStatement pstmttwo = conn.prepareStatement(sqlfive)){
+
+                    pstmttwo.setInt(1, chatId);
+                    pstmttwo.executeUpdate();
+                    
+                }
+            }
+
+            stmt.executeUpdate(sqlthree);
+            stmt.executeUpdate(sqlfour);
+
+            System.out.println("DELETED CHAT SUCCESSFULLY");
+
+            return true;
+
+
+        }catch(SQLException e){
+
+            System.out.println("DELETING CHAT ERROR: " + e.getMessage());
+        }
+
+        return false;
+    }
+
+    //remove user from a chat
+    public static boolean removeUserFromChat(Integer chatId, String username){
+
+        String sql = "DELETE FROM " + chatId + "susers WHERE username = ?";
+        String sqltwo = "DELETE FROM " + username + "schats WHERE chatid = ?";
+
+        try(Connection conn = connect();
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        PreparedStatement pstmttwo = conn.prepareStatement(sqltwo)){
+
+            pstmt.setString(1, username);
+
+            pstmt.executeUpdate();
+
+            pstmttwo.setInt(1, chatId);
+            pstmttwo.executeUpdate();
+
+            System.out.println("REMOVED USER FROM CHAT SUCCESSFULLY");
+
+            return true;
+
+        }catch(SQLException e){
+
+            System.out.println("REMOVİNG USER FROM CHAT ERROR: " + e.getMessage());
+        }
+
+        return false;
+    }
 
     //Set chat photo
+    public static boolean setChatPhoto(Integer chatId, String photoURL){
+
+        String sql = "UPDATE chats SET chatphotourl = ? WHERE id = ?";
+
+        try(Connection conn = connect();
+        PreparedStatement pstmt = conn.prepareStatement(sql)){
+
+            pstmt.setString(1, photoURL);
+            pstmt.setInt(2, chatId);
+            pstmt.executeUpdate();
+
+            System.out.println("CHAT PHOTO CHANGED SUCCESSFULLY");
+            
+            return true;
+
+        }catch(SQLException e){
+            System.out.println("CHAT PHOTO EDITING ERROR: " + e.getMessage());
+        }
+
+        return false;
+    }
 
     //creating chatusers table
     private static void createChatsUsersTable(Integer chatID){
@@ -832,15 +929,109 @@ public class DatabaseHandler {
 
     }
 
-    //get user role in chat(to check if the user is an admin or not while editimng)
+    //get user role in chat(to check if the user is an admin or not while editing). returns true if 
+    //the user is an admin
+    public static boolean isAdmin(Integer chatId, String username){
+
+        String sql = "SELECT isadmin FROM " + chatId + "susers WHERE username = ?";
+        Boolean isAdminBoolean = false;
+
+        try(Connection conn = connect();
+        PreparedStatement pstmt = conn.prepareStatement(sql)){
+            
+            pstmt.setString(1, username);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            rs.next();
+            isAdminBoolean = rs.getBoolean(1);
+
+            System.out.println("GETTING IS CHAT ADMIN SUCCESSFULL");
+
+        }catch(SQLException e){
+
+            System.out.println("GETTING IS CHAT ADMIN ERROR: " + e.getMessage());
+        }
+
+
+        return isAdminBoolean;
+    }
 
     //new message method
+    public static boolean newMessage(Integer chatId, String sender, String message){
 
+        String sql = "INSERT INTO " + chatId + "smessages (sendername, message) VALUES (?,?)";
 
-    //is message sender this user method.
+        try(Connection conn = connect();
+        PreparedStatement pstmt = conn.prepareStatement(sql)){
 
-    //is user in this chat method. returns boolean
+            pstmt.setString(1, sender);
+            pstmt.setString(2, message);
 
+            pstmt.executeUpdate();
 
+            System.out.println("MESSAGE SENT SUCCESSFULLY");
+
+            return true;
+
+        }catch(SQLException e){
+            System.out.println("SENDING MESSAGE ERROR: "+ e.getMessage());
+        }
+
+        return false;
+    }
+
+    //getuser count in a chat. returns -1 if fails or cant find the user
+    public static Integer getMemeberCount(Integer chatId){
+
+        String sql = "SELECT membercount FROM chats WHERE id = ?";
+
+        try(Connection conn = connect();
+        PreparedStatement pstmt = conn.prepareStatement(sql)){
+
+            pstmt.setInt(1, chatId);
+            
+            ResultSet rs = pstmt.executeQuery();
+            rs.next();
+
+            System.out.println("MEMBER COUNT FOUND SUCCESSFULLY");
+
+            return rs.getInt(1);
+
+        }catch(SQLException e){
+
+            System.out.println("GET MEMBER COUNT ERROR: " + e.getMessage());
+        }
+
+        return -1;
+    }
+
+    //is user in this chat method. returns boolean. this method will be used to check if the user already
+    //exists in a chat to prevent them to joın the same group twice at search chats
+    public static boolean isUserInThisChat(Integer chatId, String username){
+
+        String sql = "SELECT COUNT(*) FROM " + chatId + "susers WHERE username = ?";
+
+        try(Connection conn = connect();
+        PreparedStatement pstmt = conn.prepareStatement(sql)){
+
+            pstmt.setString(1, username);
+
+            ResultSet rs = pstmt.executeQuery();
+            if(rs.next()){
+
+                return rs.getInt(1) > 0;
+            }
+
+            System.out.println("CHECKING IF USER EXISTS IN CHAT SUCCESSFULL");
+
+        }catch(SQLException e){
+
+            System.out.println("CHECKING IF USER EXISTS IN A CHAT ERROR: " + e.getMessage());
+
+        }
+
+        return false;
+    }
 }
 
