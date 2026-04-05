@@ -62,6 +62,25 @@ public class MoviePage {
         likedImage = new Image(getClass().getResourceAsStream("/com/movies/heart.png"));
         ImageView favIcon = (ImageView) addToFavoritesBtn.getGraphic();
         favIcon.setImage(notLikedImage);
+
+        if (commentBtn != null) {
+            commentBtn.setOnAction(event -> handleGoToComments());
+        }
+    }
+
+    //setData belki burada olucak
+    private void handleGoToComments() {
+        try {
+            Stage currentStage = (Stage) commentBtn.getScene().getWindow();
+            CommentsPage commentsPage = new CommentsPage();
+            Scene commentsScene = commentsPage.createCommentsPageScene(currentStage);
+            currentStage.setScene(commentsScene);
+            currentStage.setFullScreen(true);
+
+        } catch (Exception e) {
+            System.out.println("cant move to comments page");
+            e.printStackTrace();
+        }
     }
 
     @FXML
