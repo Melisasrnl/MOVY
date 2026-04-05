@@ -27,9 +27,9 @@ import javafx.stage.Stage;
 import javafx.stage.Modality;
 
 public class EditProfile {
-    public static Scene createEditProfileScene(Stage stage) {
+    public  Scene createEditProfileScene(Stage stage) {
         AnchorPane root = new AnchorPane();
-        HBox topMenu = TopMenu.createTopMenu(stage);
+        HBox topMenu = new TopMenu().createTopMenu(stage);
         AnchorPane.setTopAnchor(topMenu, 10.0);
         AnchorPane.setLeftAnchor(topMenu, 5.0);
         AnchorPane.setRightAnchor(topMenu, 5.0);
