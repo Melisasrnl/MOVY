@@ -85,9 +85,9 @@ public class CommentsPage {
         String text = commentArea.getText().trim();
         if (text.isEmpty()) return;
 
-        double rating    = starRating.getRating();
-        String username  = (currentUser != null) ? currentUser.getUsername() : "me";
-        String photoPath = (currentUser != null) ? currentUser.getProfilePhotoPath() : null;
+        double rating = starRating.getRating();
+        String username = (currentUser != null) ? currentUser.getUsername() : "me";
+        String photoPath = (currentUser != null) ? currentUser.getProfilePhoto().getUrl() : null;
 
         commentsContainer.getChildren().add(0, buildCommentCard(username, photoPath, rating, text));
         commentArea.clear();
