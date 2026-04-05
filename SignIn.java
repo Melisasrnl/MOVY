@@ -7,16 +7,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.VBox;
-import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
 import javafx.scene.layout.HBox;
-import javafx.scene.Parent;
 
 public class SignIn{
     
-    public Parent getContent(){
+    public Scene choose(Stage primaryStage){
 
         //Defining the layout
-        BorderPane root = new BorderPane();
         VBox centerBox = new VBox(15);
         HBox buttonBox = new HBox(15);
         
@@ -36,38 +34,36 @@ public class SignIn{
         warning.setContentText("This user already exists. Please enter an unique mail and username.");
 
         //Setting the colors
-        mailLbl.setStyle("-fx-text-fill: white;");
-        usernameLbl.setStyle("-fx-text-fill: white;");
-        passwordLbl.setStyle("-fx-text-fill: white;");
-        mailTxt.setStyle("-fx-background-color: rgb(19, 19, 19); -fx-border-color: white;" 
-                        + "-fx-border-width: 2px; -fx-text-fill: white;");
-        usernameTxt.setStyle("-fx-background-color: rgb(19, 19, 19); -fx-border-color: white;" 
-                            + "-fx-border-width: 2px; -fx-text-fill: white;");
-        passwordTxt.setStyle("-fx-background-color: rgb(19, 19, 19); -fx-border-color: white;"
-                            + "-fx-border-width: 2px; -fx-text-fill: white;"); 
-        root.setStyle("-fx-backgroung-color: #0a0a0a;");
-        centerBox.setStyle("-fx-backgroung-color: #0a0a0a;");
-        buttonBox.setStyle("-fx-backgroung-color: #0a0a0a;");
-        continueBtn.setStyle("-fx-background-color: #232323; -fx-text-fill: white;");
-        goBackBtn.setStyle("-fx-background-color: #232323; -fx-text-fill: white;");
+        mailLbl.setStyle("-fx-text-fill: #EAEAEA;");
+        usernameLbl.setStyle("-fx-text-fill: #EAEAEA;");
+        passwordLbl.setStyle("-fx-text-fill: #EAEAEA;");
+        mailTxt.setStyle("-fx-background-color: #0B0F1A; -fx-border-color: #EAEAEA;" 
+                        + "-fx-border-width: 2px; -fx-text-fill: #EAEAEA;");
+        usernameTxt.setStyle("-fx-background-color: #0B0F1A; -fx-border-color: #EAEAEA;" 
+                            + "-fx-border-width: 2px; -fx-text-fill: #EAEAEA;");
+        passwordTxt.setStyle("-fx-background-color: #0B0F1A; -fx-border-color: #EAEAEA;"
+                            + "-fx-border-width: 2px; -fx-text-fill: #EAEAEA;");
+        buttonBox.setStyle("-fx-background-color: #0B0F1A;");
+        centerBox.setStyle("-fx-background-color: #0B0F1A;");
+        continueBtn.setStyle("-fx-background-color: #282B35; -fx-text-fill: #EAEAEA;");
+        goBackBtn.setStyle("-fx-background-color: #282B35; -fx-text-fill: #EAEAEA;");
 
         //Adding the components to the panes
         buttonBox.getChildren().addAll(goBackBtn,continueBtn);
         centerBox.getChildren().addAll(mailLbl, mailTxt, usernameLbl, usernameTxt, passwordLbl, passwordTxt, buttonBox);
-        root.setCenter(centerBox);
-
+        centerBox.setStyle("-fx-background-color: #0B0F1A;");
         //Setting the buttons handle event
         goBackBtn.setOnAction(new EventHandler<ActionEvent>(){
                 @Override
                 public void handle(ActionEvent event){
                     LogIn logIn = new LogIn();
-                    Scene nextScene = new Scene(logIn.getContent(), 600, 400);
+                    Scene nextScene =logIn.choose(primaryStage);
                     StartingPage.changeScene(nextScene);
                 }
         });
 
         //Setting the button action hansler that will go to the home page
-        continueBtn.setOnAction(new EventHandler<ActionEvent>() {
+        /*continueBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event){
                 String mail = mailTxt.getText();
@@ -82,15 +78,15 @@ public class SignIn{
                     Scene nextScene = new Scene(home.getContent());
                     StartingPage.changeScene(nextScene);
                     */
-                   System.out.println("worked!");
-                }
-                else{
+                   //System.out.println("worked!");
+                //}
+                /*else{
                     warning.showAndWait();
                 }
             }
-        });
-
-
-        return root;
+        });*/
+        Scene root2= new Scene(centerBox);
+        primaryStage.setFullScreen(true);
+        return root2;
     }
 }
