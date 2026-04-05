@@ -1,7 +1,3 @@
-package com.movies;
-
-import java.util.zip.GZIPInputStream;
-
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -20,6 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.scene.layout.AnchorPane;
 
 public class InsideChat {
     private Label nameLabel;
@@ -140,7 +137,10 @@ public class InsideChat {
 
     public Scene createInsideChatScene(Stage stage){
 
-        //add TopMenu
+        HBox topMenu = new TopMenu().createTopMenu(stage);
+        AnchorPane.setTopAnchor(topMenu, 10.0);
+        AnchorPane.setLeftAnchor(topMenu, 5.0);
+        AnchorPane.setRightAnchor(topMenu, 5.0);
         HBox header = createHeader();
         VBox messages = createMessageBox();
         HBox send = createSending();
@@ -154,7 +154,7 @@ public class InsideChat {
 
         VBox root = new VBox();
         root.setStyle("-fx-background-color: #544c4c;");
-        root.getChildren().addAll(header, scrollPane, send);
+        root.getChildren().addAll(topMenu,header, scrollPane, send);
 
         addMessage("Bensu", "naberr", false);
         addMessage("You", "iyi", true);
