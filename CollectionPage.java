@@ -56,6 +56,8 @@ public class CollectionPage {
     }
 
     public Scene createCollectionsPage(Stage stage){
+        HBox topMenu = new TopMenu().createTopMenu(stage);
+
         HBox title = new HBox();
         title.setSpacing(10);
         title.setPadding(new Insets(5));
@@ -64,6 +66,11 @@ public class CollectionPage {
         Button back = new Button("<");
         back.setShape(new Circle(10));
         back.setStyle("-fx-background-color: #edeae0;");
+        back.setOnAction(e -> {
+            ProfilePage profilePage = new ProfilePage();
+            stage.setScene(profilePage.createProfilePageScene(stage));
+        });
+
 
         Label sc = new Label("Special Collections");
         sc.setTextFill(Color.BEIGE);
@@ -81,7 +88,7 @@ public class CollectionPage {
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setStyle("-fx-control-inner-background: #292727;");
         
-        cols.getChildren().add(title);
+        cols.getChildren().addAll(topMenu, title);
 
         for (Collection col : collections) {
             cols.getChildren().add(createCollection(stage, col));
@@ -138,5 +145,9 @@ public class CollectionPage {
     }
     public void removeCollection(Collection c){
         collections.remove(c);
+    }
+
+    public ArrayList<Collection> getCollections(){
+        return collections;
     }
 }
