@@ -10,9 +10,9 @@ import javafx.stage.Stage;
 public class RecommendedPage {
     public static void addToWatchlist(String recommended) {
     }
-    public static Scene choose(Stage primaryStage) {
+    public  Scene choose(Stage primaryStage) {
 
-        HBox topMenu = TopMenu.createTopMenu(primaryStage);
+        HBox topMenu = new TopMenu().createTopMenu(primaryStage);
         AnchorPane.setTopAnchor(topMenu, 10.0);
         AnchorPane.setLeftAnchor(topMenu, 5.0);
         AnchorPane.setRightAnchor(topMenu, 5.0);
