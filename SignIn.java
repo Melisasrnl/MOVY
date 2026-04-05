@@ -63,7 +63,7 @@ public class SignIn{
         });
 
         //Setting the button action hansler that will go to the home page
-        /*continueBtn.setOnAction(new EventHandler<ActionEvent>() {
+        continueBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event){
                 String mail = mailTxt.getText();
@@ -79,12 +79,12 @@ public class SignIn{
                     StartingPage.changeScene(nextScene);
                     */
                    //System.out.println("worked!");
-                //}
-                /*else{
+                }
+                else{
                     warning.showAndWait();
                 }
             }
-        });*/
+        });
         Scene root2= new Scene(centerBox);
         primaryStage.setFullScreen(true);
         return root2;
