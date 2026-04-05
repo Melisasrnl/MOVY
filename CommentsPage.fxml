@@ -12,7 +12,6 @@
 
 <BorderPane prefHeight="700.0" prefWidth="900.0" style="-fx-background-color: #0c111b;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
 
-    <!-- Geri butonu -->
     <top>
         <HBox prefHeight="40.0" style="-fx-background-color: #0c111b;">
             <Button fx:id="backBtn" mnemonicParsing="false" style="-fx-background-color: transparent;                        -fx-text-fill: white;                        -fx-font-size: 20px;                        -fx-font-weight: bold;                        -fx-cursor: hand;" text="&lt;">
@@ -23,7 +22,6 @@
         </HBox>
     </top>
 
-    <!-- Yorumlar listesi -->
     <center>
         <ScrollPane fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: #0c111b; -fx-background: #0c111b;" BorderPane.alignment="CENTER">
             <content>
@@ -36,7 +34,6 @@
         </ScrollPane>
     </center>
 
-    <!-- Alt kisim: Rating + TextArea + Send -->
     <bottom>
         <VBox fx:id="bottomVBox" style="-fx-background-color: #0c111b; -fx-border-color: #1e2d47;   -fx-border-width: 1 0 0 0;">
             <padding>
