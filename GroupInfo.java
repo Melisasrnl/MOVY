@@ -1,7 +1,7 @@
-package com.movies;
+
 
 import java.util.HexFormat;
-
+import javafx.scene.layout.AnchorPane;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -41,13 +41,18 @@ public class GroupInfo{
     }
 
     public Scene createGroupInfoScene() {
+        HBox topMenu = new TopMenu().createTopMenu(this.stage);
+        AnchorPane.setTopAnchor(topMenu, 10.0);
+        AnchorPane.setLeftAnchor(topMenu, 5.0);
+        AnchorPane.setRightAnchor(topMenu, 5.0);
         HBox header = createInfoHeader();
         VBox members = createMemberBox();
 
         VBox mainContent = new VBox();
-        mainContent.getChildren().addAll(header, members);
+        mainContent.getChildren().addAll(topMenu,header, members);
+        mainContent.setLayoutY(60);
 
-        root = new StackPane();
+        StackPane root = new StackPane();
         root.getChildren().add(mainContent);
 
         return new Scene(root, 800, 600);
