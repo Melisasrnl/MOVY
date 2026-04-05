@@ -2,16 +2,18 @@ package com.movies;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler; 
+import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 public class StartingPage extends Application{
-
+    public static void main(String[] args) {
+        launch(args);
+    }
     private static Stage stage;
     
     @Override
@@ -20,7 +22,6 @@ public class StartingPage extends Application{
         stage = startingStage;
 
         //Defining the layout
-        BorderPane root = new BorderPane();
         VBox centerBox = new VBox(15);
         
 
@@ -30,12 +31,10 @@ public class StartingPage extends Application{
         Button logInButton = new Button("Log in");
 
         //Setting how the button and the background looks
-        signInButton.setStyle("-fx-background-color: #232323; -fx-text-fill: white;");
-        logInButton.setStyle("-fx-background-color: #232323; -fx-text-fill: white;");
-        newHereLabel.setStyle("-fx-text-fill: white;");
-        alreadyLabel.setStyle("-fx-text-fill: white;");
-        root.setStyle("-fx-backgroung-color: #000000;");
-        centerBox.setStyle("-fx-backgroung-color: #000000;");
+        signInButton.setStyle("-fx-background-color: #282B35; -fx-text-fill: #EAEAEA;");
+        logInButton.setStyle("-fx-background-color: #282B35; -fx-text-fill: #EAEAEA;");
+        newHereLabel.setStyle("-fx-text-fill: #EAEAEA;");
+        alreadyLabel.setStyle("-fx-text-fill: #EAEAEA;");
 
         //Setting the button actions
         signInButton.setOnAction( new EventHandler<ActionEvent>() {
@@ -45,7 +44,7 @@ public class StartingPage extends Application{
                 SignIn signIn = new SignIn();
 
                 //Setting the new scene
-                Scene nextScene = new Scene(signIn.getContent(), 600, 400);
+                Scene nextScene =signIn.choose(startingStage);
                 
                 changeScene(nextScene);
                 
@@ -60,22 +59,24 @@ public class StartingPage extends Application{
                 LogIn logIn = new LogIn();
 
                 //Setting the new scene
-                Scene nextScene = new Scene(logIn.getContent(), 600,400);
+                Scene nextScene =logIn.choose(startingStage);
                 changeScene(nextScene);
             }
         });
 
         //Adding the button and the labels to the pane
         centerBox.getChildren().addAll(newHereLabel, signInButton, alreadyLabel, logInButton);
-        root.setCenter(centerBox);
+        centerBox.setAlignment(Pos.CENTER);
+        centerBox.setStyle("-fx-background-color: #0B0F1A;");
 
 
         //Setting the current Scene
-        Scene currentScene = new Scene(root, 600, 400);
-        currentScene.setFill(Color.web("#0a0a0a"));
+        Scene currentScene = new Scene(centerBox, 600, 400);
+        currentScene.setFill(Color.web("#282B35"));
 
         //Adding this scene to the stage
         stage.setScene(currentScene);
+        stage.setFullScreen(true);
         stage.show();
 
     }
@@ -83,6 +84,7 @@ public class StartingPage extends Application{
     //The method to change the scene
     public static void changeScene(Scene scn){
         stage.setScene(scn);
+        stage.setFullScreen(true);
         scn.setFill(Color.web("#0a0a0a"));
     }
 }
