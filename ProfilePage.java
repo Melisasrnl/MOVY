@@ -26,32 +26,40 @@ import javafx.scene.input.MouseEvent;
 public class ProfilePage {
     public static Scene createProfilePageScene(Stage stage) {
         AnchorPane root = new AnchorPane();
+        root.setStyle("-fx-background-color: #0B0F1A;");
         HBox topMenu = TopMenu.createTopMenu(stage);
         AnchorPane.setTopAnchor(topMenu, 10.0);
         AnchorPane.setLeftAnchor(topMenu, 5.0);
         AnchorPane.setRightAnchor(topMenu, 5.0);
 
-        AnchorPane contentBox = new AnchorPane();
+        HBox contentBox = new HBox();
         contentBox.setPadding(new Insets(20));
-        AnchorPane.setTopAnchor(contentBox, 40.0);
-        AnchorPane.setLeftAnchor(contentBox, 0.0);
-        AnchorPane.setRightAnchor(contentBox, 0.0);
-        AnchorPane.setBottomAnchor(contentBox, 0.0);
+        AnchorPane.setTopAnchor(contentBox, 55.0);
+        AnchorPane.setLeftAnchor(contentBox, 15.0);
+        AnchorPane.setRightAnchor(contentBox, 15.0);
+        AnchorPane.setBottomAnchor(contentBox, 15.0);
+        contentBox.setFillHeight(true);
+        contentBox.setPrefWidth(Double.MAX_VALUE);
+
 
         Button returnToHomePage = new Button("<");
-        AnchorPane.setTopAnchor(returnToHomePage, 0.0);
-        AnchorPane.setLeftAnchor(returnToHomePage, -15.0);
+        returnToHomePage.setStyle("-fx-text-fill: #EAEAEA;");
+
         Circle userPPCircle = new Circle(27, Color.DODGERBLUE);
         Button edit = new Button("Edit");
+        edit.setStyle("-fx-background-color: #0B0F1A; -fx-text-fill: #EAEAEA");
         edit.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
                 stage.setScene(EditProfile.createEditProfileScene(stage));
             }
         });
         Label username = new Label("ceren");
+        username.setStyle("-fx-text-fill: #EAEAEA");
         Label bio = new Label("your average romcom enjoyer");
+        bio.setStyle("-fx-text-fill: #EAEAEA");
         VBox userInfo = new VBox(5, username, bio, edit);
         Button followers = new Button("15 \n Followers");
+        followers.setStyle("-fx-background-color: #0B0F1A; -fx-text-fill: #EAEAEA");
 
         followers.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
@@ -59,6 +67,7 @@ public class ProfilePage {
             }
         });
         Button followings = new Button("13 \n Followings");
+        followings.setStyle("-fx-background-color: #0B0F1A; -fx-text-fill: #EAEAEA");
 
         followers.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
@@ -67,6 +76,7 @@ public class ProfilePage {
         });
         HBox aboutFollows = new HBox(20, followers, followings);
         Button logout = new Button("Logout");
+        logout.setStyle("-fx-background-color: #0B0F1A; -fx-text-fill: #EAEAEA");
         logout.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
                 Stage popupStage = new Stage();
@@ -93,6 +103,7 @@ public class ProfilePage {
             }
         });
         VBox rightSideBio = new VBox(20, aboutFollows, logout);
+        rightSideBio.setAlignment(Pos.CENTER_LEFT);
         HBox topRow = new HBox(20, userPPCircle, userInfo);
         topRow.setPadding(new Insets(20, 20, 20, 15));
         topRow.setAlignment(Pos.TOP_LEFT);
@@ -101,40 +112,110 @@ public class ProfilePage {
         topRow.getChildren().addAll(spacer, rightSideBio);
 
         Label favorites = new Label("Favorites");
+        favorites.setStyle("-fx-text-fill: #EAEAEA");
         Button seeAllFavs = new Button("See All");
+        seeAllFavs.setStyle("-fx-background-color: #0B0F1A; -fx-text-fill: #EAEAEA");
 
         Region spacerFav = new Region();
         HBox.setHgrow(spacerFav, Priority.ALWAYS);
-        HBox favsLine = new HBox(10,favorites,spacerFav, seeAllFavs);
+        HBox favsLine = new HBox(10, favorites, spacerFav, seeAllFavs);
         favsLine.setAlignment(Pos.CENTER_LEFT);
         favsLine.setMaxWidth(Double.MAX_VALUE);
 
         Label recentWatches = new Label("Recent Watches");
+        recentWatches.setStyle("-fx-text-fill: #EAEAEA;");
         Button seeAllRWs = new Button("See All");
+        seeAllRWs.setStyle("-fx-background-color: #0B0F1A; -fx-text-fill: #EAEAEA");
         Region spacerRWs = new Region();
         HBox.setHgrow(spacerRWs, Priority.ALWAYS);
-
-
-        HBox RWsLine = new HBox(10,recentWatches,spacerRWs,seeAllRWs);
+        HBox RWsLine = new HBox(10, recentWatches,  spacerRWs,seeAllRWs);
         RWsLine.setAlignment(Pos.CENTER_LEFT);
         RWsLine.setMaxWidth(Double.MAX_VALUE);
 
-        VBox bottomRow = new VBox(120, favsLine,RWsLine);
+        VBox bottomRow = new VBox(120, favsLine, RWsLine);
         bottomRow.setPadding(new Insets(20, 20, 20, 15));
         bottomRow.setAlignment(Pos.CENTER_LEFT);
 
         VBox leftSide = new VBox(20, topRow, bottomRow);
         leftSide.setPadding(new Insets(20, 20, 20, 15));
         leftSide.setAlignment(Pos.TOP_LEFT);
-        Region spacerTwo = new Region();
-        VBox.setVgrow(spacerTwo, Priority.ALWAYS);
-
-        AnchorPane.setTopAnchor(leftSide, 0.0);
-        AnchorPane.setLeftAnchor(leftSide, 0.0);
-        AnchorPane.setRightAnchor(leftSide, 300.0);
+        VBox.setVgrow(leftSide, Priority.ALWAYS);
 
 
-        contentBox.getChildren().addAll(returnToHomePage, leftSide);
+        Label dvdDrawer = new Label("DVD DRAWER");
+        dvdDrawer.setStyle("-fx-text-fill: #EAEAEA;");
+
+        Label watchList = new Label("Watchlist");
+        watchList.setStyle("-fx-text-fill: #EAEAEA;");
+        Button seeAllWL = new Button("See All");
+        seeAllWL.setStyle("-fx-background-color: #282B35; -fx-text-fill: #EAEAEA");
+        Region spacerWL = new Region();
+        HBox.setHgrow(spacerWL, Priority.ALWAYS);
+        HBox WLLine = new HBox(10,  spacerWL,watchList, seeAllWL);
+        WLLine.setMaxWidth(Double.MAX_VALUE);
+
+        Label recombyFriends = new Label("Recommended by Friends");
+        recombyFriends.setStyle("-fx-text-fill: #EAEAEA;");
+        Button seeAllRBF = new Button("See All");
+        seeAllRBF.setStyle("-fx-background-color: #282B35; -fx-text-fill: #EAEAEA");
+        Region spacerRBF = new Region();
+        HBox.setHgrow(spacerRBF, Priority.ALWAYS);
+        HBox RBFLine = new HBox(10, spacerRBF,recombyFriends,  seeAllRBF);
+        RBFLine.setMaxWidth(Double.MAX_VALUE);
+
+        Label specialColl = new Label("Special Collections");
+        specialColl.setStyle("-fx-text-fill: #EAEAEA;");
+        Button seeAllSC = new Button("See All");
+        seeAllSC.setStyle("-fx-background-color: #282B35; -fx-text-fill: #EAEAEA");
+        Region spacerSC = new Region();
+        HBox.setHgrow(spacerSC, Priority.ALWAYS);
+        HBox SCLine = new HBox(10, spacerSC,specialColl, seeAllSC);
+        SCLine.setMaxWidth(Double.MAX_VALUE);
+
+        // the most recent three collections will be displayed here as buttons, a for loop may be used
+        Button coll1 = new Button("collection 1");
+        coll1.setStyle("-fx-background-color: #282B35; -fx-text-fill: #EAEAEA");
+        Button coll2 = new Button("collection 2");
+        coll2.setStyle("-fx-background-color: #282B35; -fx-text-fill: #EAEAEA");
+        Button coll3 = new Button("collection 3");
+        coll3.setStyle("-fx-background-color: #282B35; -fx-text-fill: #EAEAEA");
+
+        Button addSC = new Button("Add New Collection");
+        addSC.setStyle("-fx-text-fill: #EAEAEA;");
+        addSC.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent e) {
+                // a new scene will be displayed
+            }
+        });
+        Label activites = new Label("Activities");
+        activites.setStyle("-fx-text-fill: #EAEAEA;");
+        Button seeAllAct = new Button("See All");
+        seeAllAct.setStyle("-fx-background-color: #282B35; -fx-text-fill: #EAEAEA");
+        Region spacerAct = new Region();
+        HBox.setHgrow(spacerAct, Priority.ALWAYS);
+        HBox actLine = new HBox(10, spacerAct, activites, seeAllAct);
+        actLine.setMaxWidth(Double.MAX_VALUE);
+        //label will be changed
+        Label lastAct = new Label("ekin rated Whiplash");
+        lastAct.setStyle("-fx-text-fill: #EAEAEA;");
+
+        VBox rightSide = new VBox(40,dvdDrawer,WLLine,RBFLine,SCLine,coll1,coll2,coll3,addSC,actLine,lastAct);
+        rightSide.setStyle("-fx-background-color: #282B35; -fx-text-fill: #EAEAEA");
+        rightSide.setAlignment(Pos.TOP_CENTER);
+        rightSide.setMinWidth(200);
+        rightSide.setPrefWidth(250);
+        rightSide.setMaxWidth(300);
+        leftSide.setMinWidth(0);
+        leftSide.setPrefWidth(600);
+        HBox.setHgrow(leftSide, Priority.ALWAYS);
+        VBox leftWrapper = new VBox(10, returnToHomePage, leftSide);
+        HBox.setHgrow(leftWrapper, Priority.ALWAYS);
+        rightSide.setMaxHeight(Double.MAX_VALUE);
+        contentBox.setAlignment(Pos.TOP_LEFT);
+        Region spacerMain = new Region();
+        HBox.setHgrow(spacerMain, Priority.ALWAYS);
+
+        contentBox.getChildren().addAll(leftWrapper, spacerMain, rightSide);
         root.getChildren().addAll(topMenu, contentBox);
         return new Scene(root);
     }
