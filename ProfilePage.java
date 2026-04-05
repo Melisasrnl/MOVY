@@ -1,29 +1,26 @@
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
+package com.movies;
+
 import javafx.geometry.Pos;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.scene.control.*;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import javafx.scene.input.MouseEvent;
 
 public class ProfilePage {
+    private CollectionPage cp = new CollectionPage();
+
     public  Scene createProfilePageScene(Stage stage) {
         AnchorPane root = new AnchorPane();
         root.setStyle("-fx-background-color: #0B0F1A;");
@@ -143,50 +140,66 @@ public class ProfilePage {
 
 
         Label dvdDrawer = new Label("DVD DRAWER");
-        dvdDrawer.setStyle("-fx-text-fill: #EAEAEA;");
+        dvdDrawer.setStyle("-fx-text-fill: #EAEAEA;-fx-font-weight: bold;");
+        dvdDrawer.setFont(new Font(30));
 
         Label watchList = new Label("Watchlist");
-        watchList.setStyle("-fx-text-fill: #EAEAEA;");
+        watchList.setStyle("-fx-text-fill: #EAEAEA; -fx-font-weight: bold;");
         Button seeAllWL = new Button("See All");
-        seeAllWL.setStyle("-fx-background-color: #282B35; -fx-text-fill: #EAEAEA");
+        seeAllWL.setStyle("-fx-background-color: #1f1f21;; -fx-text-fill: #EAEAEA");
         Region spacerWL = new Region();
         HBox.setHgrow(spacerWL, Priority.ALWAYS);
         HBox WLLine = new HBox(10,  spacerWL,watchList, seeAllWL);
         WLLine.setMaxWidth(Double.MAX_VALUE);
+        WLLine.setStyle("-fx-background-color: #1f1f21;");
 
         Label recombyFriends = new Label("Recommended by Friends");
-        recombyFriends.setStyle("-fx-text-fill: #EAEAEA;");
+        recombyFriends.setStyle("-fx-text-fill: #EAEAEA; -fx-font-weight: bold;");
         Button seeAllRBF = new Button("See All");
-        seeAllRBF.setStyle("-fx-background-color: #282B35; -fx-text-fill: #EAEAEA");
+        seeAllRBF.setStyle("-fx-background-color: #1f1f21;; -fx-text-fill: #EAEAEA");
         Region spacerRBF = new Region();
         HBox.setHgrow(spacerRBF, Priority.ALWAYS);
-        HBox RBFLine = new HBox(10, spacerRBF,recombyFriends,  seeAllRBF);
+        HBox RBFLine = new HBox(10, spacerRBF,recombyFriends, seeAllRBF);
         RBFLine.setMaxWidth(Double.MAX_VALUE);
+        RBFLine.setStyle("-fx-background-color: #1f1f21;");
 
         Label specialColl = new Label("Special Collections");
-        specialColl.setStyle("-fx-text-fill: #EAEAEA;");
+        specialColl.setStyle("-fx-text-fill: #EAEAEA; -fx-font-weight: bold;");
         Button seeAllSC = new Button("See All");
-        seeAllSC.setStyle("-fx-background-color: #282B35; -fx-text-fill: #EAEAEA");
+        seeAllSC.setStyle("-fx-background-color: #1f1f21; -fx-text-fill: #EAEAEA");
+        seeAllSC.setOnAction(e -> {
+            stage.setScene(cp.createCollectionsPage(stage));
+        });
+
         Region spacerSC = new Region();
         HBox.setHgrow(spacerSC, Priority.ALWAYS);
-        HBox SCLine = new HBox(10, spacerSC,specialColl, seeAllSC);
+        HBox SCLine = new HBox(10,spacerSC,specialColl, seeAllSC);
         SCLine.setMaxWidth(Double.MAX_VALUE);
+        SCLine.setStyle("-fx-background-color: #1f1f21;");
 
-        // the most recent three collections will be displayed here as buttons, a for loop may be used
-        Button coll1 = new Button("collection 1");
-        coll1.setStyle("-fx-background-color: #282B35; -fx-text-fill: #EAEAEA");
-        Button coll2 = new Button("collection 2");
-        coll2.setStyle("-fx-background-color: #282B35; -fx-text-fill: #EAEAEA");
-        Button coll3 = new Button("collection 3");
-        coll3.setStyle("-fx-background-color: #282B35; -fx-text-fill: #EAEAEA");
-
-        Button addSC = new Button("Add New Collection");
-        addSC.setStyle("-fx-text-fill: #EAEAEA;");
-        addSC.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            public void handle(MouseEvent e) {
-                // a new scene will be displayed
-            }
+        Button addSC = new Button("+ Add New Collection");
+        addSC.setOnAction(e -> { 
+            StackPane popup = new CreateCollection().createNewCol(stage, root, cp);
+            root.getChildren().add(popup);
         });
+
+        addSC.setStyle("-fx-text-fill: #000000;");
+
+        // the most recent three collections will be displayed here as buttons, a for loop may be used//DID IT!
+        VBox top3collections= new VBox();
+        top3collections.setSpacing(10);
+        top3collections.setAlignment(Pos.CENTER);
+        top3collections.getChildren().addAll(SCLine,addSC);
+        for(int i=0; i<3; i++){
+            Collection c = cp.getCollections().get(i);
+            Button col = new Button(c.getName());
+            col.setStyle("-fx-background-color: #1f1f21; -fx-text-fill: #EAEAEA");
+            col.setOnAction(e -> {
+                stage.setScene(c.showCDP(stage, cp));
+            });
+            top3collections.getChildren().add(col);
+        }
+
         Label activites = new Label("Activities");
         activites.setStyle("-fx-text-fill: #EAEAEA;");
         Button seeAllAct = new Button("See All");
@@ -199,7 +212,8 @@ public class ProfilePage {
         Label lastAct = new Label("ekin rated Whiplash");
         lastAct.setStyle("-fx-text-fill: #EAEAEA;");
 
-        VBox rightSide = new VBox(40,dvdDrawer,WLLine,RBFLine,SCLine,coll1,coll2,coll3,addSC,actLine,lastAct);
+        VBox rightSide = new VBox(40,dvdDrawer,WLLine,RBFLine,top3collections,actLine,lastAct);
+        rightSide.setPadding(new Insets(10));
         rightSide.setStyle("-fx-background-color: #282B35; -fx-text-fill: #EAEAEA");
         rightSide.setAlignment(Pos.TOP_CENTER);
         rightSide.setMinWidth(200);
