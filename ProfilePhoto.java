@@ -1,5 +1,9 @@
 package com.movies;
 
+import javafx.scene.image.Image;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Circle;
+
 public enum ProfilePhoto {
 
     AVATAR_1("https://res.cloudinary.com/dsvq5k1xr/image/upload/v1775046449/yellowpf_njndsd.jpg"),
@@ -19,5 +23,21 @@ public enum ProfilePhoto {
  
     public String getUrl() {
         return url;
+    }
+    //returning the enum value of the URLs
+    public static ProfilePhoto fromString(String url) {
+        for (ProfilePhoto pp : ProfilePhoto.values()) {
+            if (pp.getUrl().equals(url)) {
+                return pp;
+            }
+        }
+        return ProfilePhoto.DEFAULT;
+    }
+    //returns the PP in the circle form with the radius r
+    public Circle createCircle(double r) {
+        Circle circle = new Circle(r);
+        Image image = new Image(this.url, r*2, r*2, false, true);
+        circle.setFill(new ImagePattern(image));
+        return circle;
     }
 }
