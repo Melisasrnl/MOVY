@@ -71,10 +71,22 @@ public class LogIn{
                         MainPage mainPage = new MainPage();
                         Scene nextScene;
                         nextScene = mainPage.createMainPageScene(primaryStage);
-                        //user for now
-                        User currentUser = new User(name, name + "@mail.com", 1L);
-                        currentUser.setProfilePhotoPath(ProfilePhoto.DEFAULT);
-                        mainPage.setData(currentUser, null);
+                        String email = DatabaseHandler.userStringGetter("email", "username", name);
+                        long id = DatabaseHandler.userIntegerGetter("id", "username",name );
+                        
+                        //do not forget to define a public static currentUser in the main/app
+                        Main.currentUser = new User(name, email, id);
+                        
+                        String ppURL = DatabaseHandler.userStringGetter("profilepic", "username", name);
+
+                        //i added public static ProfilePhoto fromString(String url) method to ProfilePhoto class
+                        //still not sure about that pp part
+                        //check the new method and consistency
+                        if (ppURL != null && !ppURL.equals("userstringnotfound")) {
+                            ProfilePhoto profilePhoto = ProfilePhoto.fromString(ppURL);
+                            Main.currentUser.setProfilePhoto(profilePhoto);
+                        }
+                        mainPage.setData(Main.currentUser, null);
                          primaryStage.setScene(nextScene);
                         primaryStage.setFullScreen(true);
                         primaryStage.show();
