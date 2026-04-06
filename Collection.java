@@ -9,6 +9,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
@@ -34,6 +37,7 @@ public class Collection {
     }
 
     public Scene showCDP(Stage stage, CollectionPage cp){
+        HBox topMenu = new TopMenu().createTopMenu(stage);
         StackPane root = new StackPane();
         root.setStyle("-fx-background-color: #b2b1ae;");
         BorderPane mainLayout = new BorderPane();
@@ -51,6 +55,58 @@ public class Collection {
         Label title = new Label(this.name);
         title.setTextFill(Color.BEIGE);
         title.setFont(new Font(18));
+
+        Button info = new Button("Info");
+        info.setOnAction(e -> {
+            StackPane overlay = new StackPane();
+            VBox popup = new VBox(15);
+            popup.setPadding(new Insets(20));
+            popup.setAlignment(Pos.CENTER);
+            popup.setStyle("-fx-background-color: #2c2727; -fx-background-radius: 10;");
+
+            popup.setMaxWidth(300);
+            popup.setMaxHeight(200);
+
+            Label popupTitle = new Label("Change Collection Info");
+            popupTitle.setTextFill(Color.WHITE);
+            popupTitle.setFont(new Font(16));
+
+            TextField input = new TextField();
+            input.setPromptText("Enter new name");
+
+            HBox pButtons = new HBox(10);
+            pButtons.setPadding(new Insets(10));
+            ToggleButton publicBtn = new ToggleButton("Public");
+            ToggleButton privateBtn = new ToggleButton("Private");
+            pButtons.getChildren().addAll(publicBtn, privateBtn);
+            pButtons.setAlignment(Pos.CENTER);
+
+            ToggleGroup group = new ToggleGroup();
+            publicBtn.setToggleGroup(group);
+            privateBtn.setToggleGroup(group);
+
+            publicBtn.setSelected(true);
+
+            HBox buttons = new HBox(5);
+            buttons.setPadding(new Insets(10,70,10,70));
+            Button submit = new Button("Submit");
+            submit.setOnAction(ev -> {
+                //TODO
+                root.getChildren().remove(overlay);
+            });
+
+            Button cancelButton = new Button("Cancel");
+            cancelButton.setOnAction(ev -> {
+                root.getChildren().remove(overlay);
+            });
+
+            buttons.getChildren().addAll(submit, cancelButton);
+
+            popup.getChildren().addAll(popupTitle, input, pButtons, buttons);
+            overlay.getChildren().add(popup);
+            root.getChildren().add(overlay);
+
+        });
 
         Button edit = new Button("Edit");
         edit.setOnAction(e -> {
@@ -105,7 +161,9 @@ public class Collection {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        topBar.getChildren().addAll(back, title, spacer, edit, deleteButton);
+        topBar.getChildren().addAll(back, title,info, spacer, edit, deleteButton);
+        VBox headerBox = new VBox();
+        headerBox.getChildren().addAll(topMenu, topBar);
 
         FlowPane moviePane = new FlowPane();
         moviePane.setPadding(new Insets(15));
@@ -129,7 +187,7 @@ public class Collection {
         scroll.setStyle("-fx-background: #b2b1ae; -fx-background-color: #b2b1ae;");
         scroll.setFitToWidth(true);
 
-        mainLayout.setTop(topBar);
+        mainLayout.setTop(headerBox);
         mainLayout.setCenter(scroll);
 
         root.getChildren().add(mainLayout);
