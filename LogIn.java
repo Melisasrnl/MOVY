@@ -66,13 +66,22 @@ public class LogIn{
 
                 if(DatabaseHandler.isValidateLogin(name, password)){
 
-                    //Open this lines after creating the home scene
-                    /*
-                    HomePage home = new HomePage();
-                    Scene nextScene = new Scene(home.getContent());
-                    StartingPage.changeScene(nextScene);
-                    */
-                   //System.out.println("worked!");
+                    
+                    try {
+                        MainPage mainPage = new MainPage();
+                        Scene nextScene;
+                        nextScene = mainPage.createMainPageScene(primaryStage);
+                        //user for now
+                        User currentUser = new User(name, name + "@mail.com", 1L);
+                        currentUser.setProfilePhotoPath(ProfilePhoto.DEFAULT);
+                        mainPage.setData(currentUser, null);
+                         primaryStage.setScene(nextScene);
+                        primaryStage.setFullScreen(true);
+                        primaryStage.show();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    
                 }
                 else{
                     warning.showAndWait();
