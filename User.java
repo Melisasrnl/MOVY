@@ -170,7 +170,7 @@ public class User {
         if (this.following.contains(targetUser)) {
             this.removeFollowing(targetUser);
             targetUser.removeFollower(this);
-            DatabaseHandler.unfollowUser(this.username, targetUser.getUsername());
+            DatabaseHandler.stopFollowing(this.username, targetUser.getUsername());
         }
     }
 }
