@@ -30,13 +30,12 @@ public class TopMenu {
         topMenu.setPadding(new Insets(5));
         topMenu.setAlignment(Pos.CENTER_LEFT);
 
-        // a circle is used temporarily instead of a profile picture, the radius might
-        // be modified
-        Circle userPPCircle = new Circle(18, Color.DODGERBLUE);
-        userPPCircle.setStroke(Color.BLACK);
-
-        // username will be modified
-        Button userButton = new Button("ceren");
+        //do not forget to check the createCircle method!!
+        ProfilePhoto userPP = Main.currentUser.getProfilePhoto();
+        Circle userPPCircle = userPP.createCircle(18);
+    
+        Button userButton = new Button(Main.currentUser.getUsername());
+        
         userButton.setStyle("-fx-background-color: #0B0F1A; -fx-text-fill: white;");
         userButton.setPrefSize(83, 40);
         userButton.setMaxWidth(Double.MAX_VALUE);
