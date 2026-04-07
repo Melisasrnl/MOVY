@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class TmdbService {
     
-    private static final String API_KEY = "";
+    private static final String API_KEY = "8b7e46572422c564d98f4f02e7501f3d";
     private static final String BASE_URL = "https://api.themoviedb.org/3";
 
     private static String connectAndGetJson(String endpoint){
@@ -71,7 +71,7 @@ public class TmdbService {
         String jsonString = getMovieDetailsJson(movieId);
         JSONObject movie = new JSONObject(jsonString);
 
-        return movie.getString("poster_path");
+        return "https://image.tmdb.org/t/p/w500" + movie.getString("poster_path");
     }
 
     //This method returns the director of the movie
