@@ -1,3 +1,6 @@
+package com.movies;
+
+
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -30,20 +33,19 @@ public class TopMenu {
         topMenu.setPadding(new Insets(5));
         topMenu.setAlignment(Pos.CENTER_LEFT);
 
-        //do not forget to check the createCircle method!!
-        ProfilePhoto userPP = Main.currentUser.getProfilePhoto();
-        Circle userPPCircle = userPP.createCircle(18);
-    
-        Button userButton = new Button(Main.currentUser.getUsername());
-        
+        // a circle is used temporarily instead of a profile picture, the radius might
+        // be modified
+        Circle userPPCircle = new Circle(18, Color.DODGERBLUE);
+        userPPCircle.setStroke(Color.BLACK);
+
+        // username will be modified
+        Button userButton = new Button("ceren");
         userButton.setStyle("-fx-background-color: #0B0F1A; -fx-text-fill: white;");
         userButton.setPrefSize(83, 40);
         userButton.setMaxWidth(Double.MAX_VALUE);
         userButton.setPadding(new Insets(0, 10, 0, 0));
         userButton.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                stage.setScene(new ProfilePage().createProfilePageScene(stage));
-                System.out.println("username button is working");
             }
         });
         // button name may be changed
@@ -88,15 +90,11 @@ public class TopMenu {
 
         searchChats.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent event) {
-                stage.setScene(new SearchChats().createSearchChatsScene(stage));
-                System.out.println("searching chats is working");
             }
         });
 
         myChats.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent event) {
-                stage.setScene(new MyChats().createMyChatsScene(stage));
-                System.out.println("mychats button is working");
             }
         });
 
@@ -116,3 +114,4 @@ public class TopMenu {
     }
 
 }
+
