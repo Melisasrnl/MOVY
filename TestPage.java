@@ -21,14 +21,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
-public class TestPage {
-    public String selectedAge;
-    public String selectedAppropriate;
-    public ArrayList<String> selectedGenres;
-
-
-    public static void choices(ArrayList<String> chosen) {
-    }
+public class TestPage { 
 
     public  Scene choose(Stage primaryStage) {
 
@@ -36,13 +29,6 @@ public class TestPage {
         AnchorPane.setTopAnchor(topMenu, 10.0);
         AnchorPane.setLeftAnchor(topMenu, 5.0);
         AnchorPane.setRightAnchor(topMenu, 5.0);
-        // Layout for the go back button
-        VBox back = new VBox();
-        Button goBack = new Button("←");
-        back.setScaleX(3);
-        goBack.setStyle("-fx-background-color: #0B0F1A;" + "-fx-text-fill: #EAEAEA;");
-        goBack.setScaleY(2);
-        back.getChildren().add(goBack);
         // Layout for questions & answers
         // header
         Label header = new Label("Movie Picker");
@@ -128,8 +114,52 @@ public class TestPage {
         Button finish = new Button("I am ready!");
         finish.setOnAction(new EventHandler<ActionEvent>() {
             @Override
-            public void handle(ActionEvent event){
-                primaryStage.setScene(new RecommendedPage().choose(primaryStage));
+            public void handle(ActionEvent event) {
+                ArrayList<String> genres = new ArrayList<>();
+                if (q3a1.isSelected())
+                    genres.add("Science Fiction");
+                if (q3a2.isSelected())
+                    genres.add("Action");
+                if (q3a3.isSelected())
+                    genres.add("Thriller");
+                if (q3a4.isSelected())
+                    genres.add("Horror");
+                if (q3a5.isSelected())
+                    genres.add("Drama");
+                if (q3a6.isSelected())
+                    genres.add("Comedy");
+                if (q3a7.isSelected())
+                    genres.add("Fantasy");
+                if (q3a8.isSelected())
+                    genres.add("Mystery");
+
+                //Get Potential Movies 
+                ArrayList<Integer> movieIds = TmdbService.getPopularMovies();
+                ArrayList<Integer> filteredIds = new ArrayList<>();
+
+                //Filtering Logic
+                for (Integer id : movieIds) {
+                    ArrayList<String> movieGenres = TmdbService.getMovieGenres(id);
+                    String year = TmdbService.getYear(id);
+                    int releaseYear = Integer.parseInt(year);
+                    int currentYear = 2026;
+                    // Check the genre
+                    boolean genreMatch = genres.isEmpty() || movieGenres.stream().anyMatch(genres::contains);
+                    // Check the year
+                    boolean yearMatch = true;
+                    if (q2a3.isSelected())
+                        yearMatch = (currentYear - releaseYear <= 10);
+                    else if (q2a4.isSelected())
+                        yearMatch = (currentYear - releaseYear >= 20);
+                    if (genreMatch && yearMatch) {
+                        filteredIds.add(id);
+                    }
+                }
+                //Select a random movie from filtered results
+                Integer selectedId = filteredIds.isEmpty() ? movieIds.get(0)
+                        : filteredIds.get((int) (Math.random() * filteredIds.size()));
+                //Transition to RecommendedPage with the movie ID
+                primaryStage.setScene(new RecommendedPage().choose(primaryStage, selectedId));
             }
         });
         finish.setStyle("-fx-background-color: #282B35;" + "-fx-text-fill: #EAEAEA;");
@@ -137,11 +167,10 @@ public class TestPage {
         VBox finishBox = new VBox(finish);
         finishBox.setAlignment(Pos.CENTER_RIGHT);
         // Putting everything together
-        HBox contains = new HBox(40, back, quiz, finishBox);
+        HBox contains = new HBox(40, quiz, finishBox);
         VBox wholePage = new VBox(10, topMenu, contains);
         wholePage.setStyle("-fx-background-color: #0B0F1A;");
         Scene testScene = new Scene(wholePage);
         return testScene;
-
     }
 }
