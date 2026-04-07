@@ -47,15 +47,15 @@ public class User {
     }
 
     public long getUserID() {
-        return userID;
+        return DatabaseHandler.userIntegerGetter("id", "username", this.username);
     }
 
     public String getEmail() {
-        return email;
+        return DatabaseHandler.userStringGetter("email", "username", this.username);
     }
 
     public String getBio() {
-        return bio;
+        return DatabaseHandler.userStringGetter("userbio", "username", this.username);
     }
 
     public List<String> getFavorites() {
@@ -93,6 +93,13 @@ public class User {
     public ProfilePhoto getProfilePhoto() {
         return profilePhoto;
     }
+
+    public int getFollowersCount() {
+        return DatabaseHandler.userIntegerGetter("followercount", "username", this.username);
+    }
+    public int getFollowingCount() {
+        return DatabaseHandler.userIntegerGetter("followingcount", "username", this.username);
+    }
  
     public void setProfilePhotoPath(ProfilePhoto profilePhoto) {
         this.profilePhoto = profilePhoto;
@@ -105,6 +112,7 @@ public class User {
 
     public void setBio(String bio) {
         this.bio = bio;
+        DatabaseHandler.userStringSetter("userbio", bio, "username", this.username);
     }
 
     public void setChats(List<Long> chats) {
@@ -163,6 +171,7 @@ public class User {
             this.addFollowing(targetUser);
             targetUser.addFollower(this);
             DatabaseHandler.followUser(this.username, targetUser.getUsername());
+            
         }
     }
     
