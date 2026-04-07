@@ -42,7 +42,9 @@ public class ProfilePage {
         Button returnToHomePage = new Button("<");
         returnToHomePage.setStyle("-fx-text-fill: #EAEAEA;");
 
-        Circle userPPCircle = new Circle(27, Color.DODGERBLUE);
+        ProfilePhoto userPP = Main.currentUser.getProfilePhoto();
+        Circle userPPCircle = userPP.ProfilePhoto().createCircle(27);
+        
         Button edit = new Button("Edit");
         edit.setStyle("-fx-background-color: #0B0F1A; -fx-text-fill: #EAEAEA");
         edit.setOnAction(new EventHandler<ActionEvent>() {
@@ -50,25 +52,27 @@ public class ProfilePage {
                 stage.setScene(new EditProfile().createEditProfileScene(stage));
             }
         });
-        Label username = new Label("ceren");
+        Label username = new Label(Main.currentUser.getUsername());
         username.setStyle("-fx-text-fill: #EAEAEA");
-        Label bio = new Label("your average romcom enjoyer");
+        Label bio = new Label(Main.currentUser.getBio());
         bio.setStyle("-fx-text-fill: #EAEAEA");
         VBox userInfo = new VBox(5, username, bio, edit);
-        Button followers = new Button("15 \n Followers");
+        Button followers = new Button(Main.currentUser.getFollowers() + "Followers");
         followers.setStyle("-fx-background-color: #0B0F1A; -fx-text-fill: #EAEAEA");
 
         followers.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
-                // a new scene will be added
+                stage.setScene(new Followers().createFollowersScene(stage));
+
             }
         });
-        Button followings = new Button("13 \n Followings");
+        Button followings = new Button(Main.currentUser.getFollowing() + "Following");
         followings.setStyle("-fx-background-color: #0B0F1A; -fx-text-fill: #EAEAEA");
 
         followers.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
-                // a new scene will be added
+                stage.setScene(new Following().createFollowingScene(stage));
+
             }
         });
         HBox aboutFollows = new HBox(20, followers, followings);
@@ -94,7 +98,7 @@ public class ProfilePage {
                 logoutBtn.setOnAction(new EventHandler<ActionEvent>() {
                     public void handle(ActionEvent event) {
                         popupStage.close();
-                        // a new scene will be added
+                        // starting page scene will be added
                     }
                 });
             }
@@ -111,6 +115,7 @@ public class ProfilePage {
         Label favorites = new Label("Favorites");
         favorites.setStyle("-fx-text-fill: #EAEAEA");
         Button seeAllFavs = new Button("See All");
+        //the new scene will be added
         seeAllFavs.setStyle("-fx-background-color: #0B0F1A; -fx-text-fill: #EAEAEA");
 
         Region spacerFav = new Region();
