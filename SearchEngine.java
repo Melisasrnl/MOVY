@@ -112,10 +112,8 @@ public class SearchEngine {
         // Navigation Logic
         btn.setOnAction(e -> {
             try {
-                Movie movie = new Movie(TmdbService.getMovieName(movieId), String.valueOf(movieId));
-                // Populate movie object with details from TmdbService
-                movie.setMovieOverview(TmdbService.getSummary(movieId));
-                movie.setDirector(TmdbService.getMovieDirector(movieId));
+                Movie movie = new Movie(TmdbService.getMovieName(movieId), movieId);
+                movie.setPosterUrl(fullUrl);
                 // create the movie object
                 MoviePage moviePage = new MoviePage();
                 Scene movieScene = moviePage.createAboutMovieScene(stage);
