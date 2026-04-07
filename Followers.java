@@ -33,12 +33,13 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import java.util.ArrayList;
 
 import java.util.List;
 
 public class Followers {
 
-    public Scene createFollowersScene(Stage stage /*List<User> followersList*/) {
+    public Scene createFollowersScene(Stage stage) {
         HBox topMenu = new TopMenu().createTopMenu(stage);
         AnchorPane.setTopAnchor(topMenu, 10.0);
         AnchorPane.setLeftAnchor(topMenu, 5.0);
@@ -49,68 +50,60 @@ public class Followers {
 
         Label title = new Label("Followers");
         title.setStyle("-fx-font-size: 35px;");
-
         root.getChildren().add(title);
 
-        TextField searchField = new TextField();
-        searchField.setPromptText("Search...");
-        root.getChildren().add(searchField);
         VBox listVBox = new VBox(10);
-        /*for (User user : followingList) {
+        ArrayList<String> followingList = DatabaseHandler.getFollowings(Main.currentUser.getUsername());
+        ArrayList<String> followersList = DatabaseHandler.getFollowers(Main.currentUser.getUsername());
+
+        for (String follower : followersList) {
             HBox userRow = new HBox(10);
-            // Profile photos will be added
-            profilePic.setFitWidth(40);
-            profilePic.setFitHeight(40);
+            String profilePic = DatabaseHandler.userStringGetter("profilepic", "username", follower);
+            ProfilePhoto userPP = ProfilePhoto.fromString(profilePic);
+            Circle userPPCircle = userPP.createCircle(18);
 
             VBox userInfo = new VBox(5);
-            Label usernameLabel = new Label(user.getUsername());
-            Label followerCountLabel = new Label(user.getFollowers().size() + " followers");
+            Label usernameLabel = new Label(follower);
+            int followerCount = DatabaseHandler.userIntegerGetter("followercount", "username", follower);
+            Label followerCountLabel = new Label( followerCount + " followers");
             userInfo.getChildren().addAll(usernameLabel, followerCountLabel);
 
-            // Buttons
-            Button unfollowBtn = new Button("Unfollow");
-            //if friends:
-            Button chatBtn = new Button("Chat");
-
-            HBox buttons = new HBox(5, unfollowBtn, chatBtn);
-
-            HBox.setHgrow(userInfo, Priority.ALWAYS);
-
-            userRow.getChildren().addAll(profilePic, userInfo, buttons);
-            listVBox.getChildren().add(userRow);
-        }*/
-       //a temporary array is created to visualize the components
-        String[] followinglist = {"q","w","e","r","t","y"};
-        for (String person : followinglist) {
-            HBox userRow = new HBox(10);
-            // Profile photos will be added
-            Circle profilePic = new Circle(25);
-            profilePic.setFill(Color.CYAN);
-
-
-            VBox userInfo = new VBox(5);
-            Label usernameLabel = new Label(person);
-            Label followerCountLabel = new Label( "123 followers");
-            userInfo.getChildren().addAll(usernameLabel, followerCountLabel);
-
-            //Only one of these two buttons will be shown
-            //If not friends:
-            Button unfollowBtn = new Button("Follow Back");
-            unfollowBtn.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent event) {
-                //follow back, change the button to chat
+            Button btn;
+            if (followingList.contains(follower)) { //friends
+                btn = new Button("Chat");
+                btn.setOnAction(new EventHandler<ActionEvent>() {
+                    public void handle(ActionEvent event) {
+                        //chat scene
+                    }
+                });
             }
-        });
-            //if friends:
-            Button chatBtn = new Button("Chat");
-            chatBtn.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent event) {
-                //new scene will be added
+            else { //follow back?
+                btn = new Button("Follow Back");
+                btn.setOnAction(new EventHandler<ActionEvent>() {
+                    public void handle(ActionEvent event) {
+                        DatabaseHandler.followUser(Main.currentUser.getUsername(), follower); 
+                        HBox parent = (HBox) btn.getParent();
+                        Button chatBtn = new Button("Chat");
+                        chatBtn.setOnAction(new EventHandler<ActionEvent>() {
+                            public void handle(ActionEvent e) {
+                                ArrayList<String> members = new ArrayList<>();
+                                members.add(Main.currentUser.getUsername());
+                                members.add(follower);
+                                ArrayList<Boolean> roles = new ArrayList<>();
+                                roles.add(false);
+                                roles.add(false);
+                                DatabaseHandler.createNewChat(follower, members,roles,true );
+                                stage.setScene(new InsideChat().createSearchChatsScene(stage)); //???
+                            }
+                        });
+                        parent.getChildren().remove(btn);
+                        parent.getChildren().add(chatBtn);
+                    }
+                });
             }
-        });
-            HBox buttons = new HBox(5, unfollowBtn, chatBtn);
             HBox.setHgrow(userInfo, Priority.ALWAYS);
-            userRow.getChildren().addAll(profilePic, userInfo, buttons);
+            HBox buttons = new HBox(5, btn);
+            userRow.getChildren().addAll(userPPCircle, userInfo, buttons);
             listVBox.getChildren().add(userRow);
         }
 
