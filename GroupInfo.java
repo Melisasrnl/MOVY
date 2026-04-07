@@ -1,65 +1,55 @@
+package com.movies;
 
+import java.util.ArrayList;
 
-import java.util.HexFormat;
-import javafx.scene.layout.AnchorPane;
-import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
-public class GroupInfo{
+public class GroupInfo {
+
     private Label nameLabel;
     private Label privacyLabel;
     private Label countLabel;
     private VBox memList;
-    private ScrollPane scrollPane;
     private Button addMemberButton;
     private Button deleteGroup;
     private StackPane root;
     private Stage stage;
     private Scene previousScene;
 
-    public GroupInfo(Stage stage, Scene previousScene) {
+    private Integer chatId;
+    private String currentUser;
+
+    public GroupInfo(Stage stage, Scene previousScene, Integer chatId, String currentUser) {
         this.stage = stage;
         this.previousScene = previousScene;
+        this.chatId = chatId;
+        this.currentUser = currentUser;
     }
 
     public Scene createGroupInfoScene() {
         HBox topMenu = new TopMenu().createTopMenu(this.stage);
-        AnchorPane.setTopAnchor(topMenu, 10.0);
-        AnchorPane.setLeftAnchor(topMenu, 5.0);
-        AnchorPane.setRightAnchor(topMenu, 5.0);
         HBox header = createInfoHeader();
         VBox members = createMemberBox();
 
         VBox mainContent = new VBox();
-        mainContent.getChildren().addAll(topMenu,header, members);
-        mainContent.setLayoutY(60);
+        mainContent.getChildren().addAll(topMenu, header, members);
 
-        StackPane root = new StackPane();
-        root.getChildren().add(mainContent);
+        this.root = new StackPane();
+        this.root.getChildren().add(mainContent);
 
-        return new Scene(root, 800, 600);
+        return new Scene(this.root, 800, 600);
     }
 
-    public HBox createInfoHeader(){
-
+    public HBox createInfoHeader() {
         HBox header = new HBox(5);
         header.setAlignment(Pos.CENTER_LEFT);
         header.setSpacing(12);
@@ -69,73 +59,70 @@ public class GroupInfo{
         Button backButton = new Button("");
         backButton.setShape(new javafx.scene.shape.Polygon(0,12,24,0,24,24));
         backButton.setStyle("-fx-background-color: #b6b0b0c9;");
-
-        backButton.setOnAction(e -> {
-            stage.setScene(previousScene);
-        });
-
+        backButton.setOnAction(e -> stage.setScene(previousScene));
 
         Circle avatar = new Circle(20);
-        avatar.setFill(Color.GRAY);   
+        avatar.setFill(Color.GRAY);
 
         VBox first = new VBox();
         first.setAlignment(Pos.CENTER);
-        nameLabel = new Label("manifest");
+
+        nameLabel = new Label(DatabaseHandler.getChatName(chatId));
         nameLabel.setTextFill(Color.WHITE);
         nameLabel.setFont(new Font(20));
-        privacyLabel = new Label("Private Chat");
+
+        privacyLabel = new Label(DatabaseHandler.isChatPrivate(chatId) ? "Private Chat" : "Public Chat");
         privacyLabel.setTextFill(Color.WHITE);
-        privacyLabel.setFont(new Font(10));
-        first.getChildren().addAll(nameLabel, privacyLabel);
+
+        countLabel = new Label(DatabaseHandler.getMemeberCount(chatId) + " Members");
+        countLabel.setTextFill(Color.WHITE);
+
+        first.getChildren().addAll(nameLabel, privacyLabel, countLabel);
 
         Label groupInfo = new Label("   Group Info   ");
         groupInfo.setTextFill(Color.WHITE);
-        groupInfo.setFont(new Font(14));
         groupInfo.setStyle("-fx-background-color: #000000; -fx-background-radius: 15;");
 
+        boolean isAdmin = DatabaseHandler.isAdmin(chatId, currentUser);
+
         addMemberButton = new Button("Add Member");
-        addMemberButton.setOnAction(e -> {
-            showAddMemberPopup();
-        });
+        addMemberButton.setDisable(!isAdmin);
+        addMemberButton.setOnAction(e -> showAddMemberPopup());
 
         deleteGroup = new Button("Delete Group");
+        deleteGroup.setDisable(!isAdmin);
+        deleteGroup.setOnAction(e -> {
+            if (DatabaseHandler.isAdmin(chatId, currentUser)) {
+                if (DatabaseHandler.deleteChat(chatId)) {
+                    stage.setScene(previousScene);
+                }
+            }
+        });
 
         Region spacer = new Region();
         Region spacer2 = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
         HBox.setHgrow(spacer2, Priority.ALWAYS);
-    
+
         header.getChildren().addAll(backButton, avatar, first, spacer, groupInfo, spacer2, addMemberButton, deleteGroup);
         return header;
     }
 
-    public VBox createMemberBox(){
-        memList = new VBox();
-        memList.setSpacing(10);
+    public VBox createMemberBox() {
+        memList = new VBox(10);
         memList.setPadding(new Insets(5));
         memList.setStyle("-fx-background-color: #ffffff;");
-        createMemberRow("mina islam", true);
-        createMemberRow("ekinsu", false);
-        createMemberRow("melsa", true);
-
+        refreshMembers();
         return memList;
-        
     }
 
-    public void createMemberRow(String member, boolean isAdmin){
+    public void createMemberRow(String member, boolean isAdminMember) {
         HBox row = new HBox(10);
 
         Circle image = new Circle(20);
-        image.setStyle("-fx-background-color: #ffffff;");
+        image.setFill(Color.LIGHTGRAY);
 
-        Label name;
-        if(isAdmin){
-            name = new Label(member + " (admin)");
-        }
-        else{
-            name = new Label(member);
-        }
-        name.setStyle("-fx-background-color: #ffffff;");
+        Label name = new Label(isAdminMember ? member + " (admin)" : member);
         name.setFont(new Font(20));
 
         Button infoButton = new Button("i");
@@ -146,33 +133,47 @@ public class GroupInfo{
 
         ContextMenu menu = new ContextMenu();
 
-        MenuItem seeProfile = new MenuItem("See Profile");
         MenuItem makeAdmin = new MenuItem("Make Admin");
         MenuItem removeAdmin = new MenuItem("Remove Admin");
+        MenuItem removeMember = new MenuItem("Remove Member");
 
-        makeAdmin.setDisable(isAdmin);
-        removeAdmin.setDisable(!isAdmin);
+        boolean isAdmin = DatabaseHandler.isAdmin(chatId, currentUser);
+
+        makeAdmin.setDisable(!isAdmin || isAdminMember);
+        removeAdmin.setDisable(!isAdmin || !isAdminMember);
+        removeMember.setDisable(!isAdmin || member.equals(currentUser));
 
         makeAdmin.setOnAction(e -> {
-            name.setText(member + " (admin)");
+            if (DatabaseHandler.isAdmin(chatId, currentUser)) {
+                DatabaseHandler.setAdmin(chatId, true, member);
+                refreshMembers();
+            }
         });
 
         removeAdmin.setOnAction(e -> {
-            name.setText(member);
+            if (DatabaseHandler.isAdmin(chatId, currentUser)) {
+                DatabaseHandler.setAdmin(chatId, false, member);
+                refreshMembers();
+            }
         });
 
-        seeProfile.setOnAction(e -> {
+        removeMember.setOnAction(e -> {
+            if (DatabaseHandler.isAdmin(chatId, currentUser)) {
+                DatabaseHandler.removeUserFromChat(chatId, member);
+                refreshMembers();
+            }
         });
 
-        menu.getItems().addAll(seeProfile, makeAdmin, removeAdmin);
+        menu.getItems().addAll(makeAdmin, removeAdmin, removeMember);
 
         infoButton.setOnAction(e -> {
-            menu.show(infoButton, Side.BOTTOM, 0, 0);
+            if (isAdmin) {
+                menu.show(infoButton, Side.BOTTOM, 0, 0);
+            }
         });
-        
-        row.getChildren().addAll(image, name, spacer , infoButton);
+
+        row.getChildren().addAll(image, name, spacer, infoButton);
         memList.getChildren().add(row);
-        
     }
 
     private void showAddMemberPopup() {
@@ -180,9 +181,6 @@ public class GroupInfo{
         popup.setPadding(new Insets(20));
         popup.setAlignment(Pos.CENTER);
         popup.setStyle("-fx-background-color: #2c2727; -fx-background-radius: 10;");
-
-        popup.setMaxWidth(300);
-        popup.setMaxHeight(200);
 
         Label title = new Label("Add Member");
         title.setTextFill(Color.WHITE);
@@ -193,23 +191,37 @@ public class GroupInfo{
         Button add = new Button("Add");
         add.setOnAction(e -> {
             String name = input.getText();
-            if(!name.equals("")){
-                createMemberRow(name, false);
-                root.getChildren().remove(popup);
+
+            if (name != null && !name.isBlank()) {
+                if (DatabaseHandler.isAdmin(chatId, currentUser) && !DatabaseHandler.isUserInThisChat(chatId, name)) {
+                    DatabaseHandler.addUserToChat(chatId, name, false);
+                    refreshMembers();
+                    root.getChildren().remove(popup);
+                }
             }
         });
+
         Button cancel = new Button("Cancel");
-        cancel.setOnAction(e -> {
-            root.getChildren().remove(popup);
-        });
+        cancel.setOnAction(e -> root.getChildren().remove(popup));
 
         HBox buttons = new HBox(10, add, cancel);
         buttons.setAlignment(Pos.CENTER);
 
         popup.getChildren().addAll(title, input, buttons);
-
         StackPane.setAlignment(popup, Pos.CENTER);
         root.getChildren().add(popup);
     }
 
+    private void refreshMembers() {
+        memList.getChildren().clear();
+
+        ArrayList<String> users = DatabaseHandler.getUserList(chatId);
+
+        for (String user : users) {
+            boolean isAdminMember = DatabaseHandler.isAdmin(chatId, user);
+            createMemberRow(user, isAdminMember);
+        }
+
+        countLabel.setText(DatabaseHandler.getMemeberCount(chatId) + " Members");
+    }
 }
