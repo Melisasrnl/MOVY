@@ -1547,7 +1547,7 @@ public class DatabaseHandler {
     //Create chats messages table
     private static void createChatsMessagesTable(Integer chatID){
 
-        String sql = "CREATE TABLE IF NOT EXISTS " + chatID + "'smessages (id INTEGER PRIMERY KEY AUTO_INCREMENT,"
+        String sql = "CREATE TABLE IF NOT EXISTS " + chatID + "smessages (id INTEGER PRIMERY KEY AUTO_INCREMENT,"
         + "sendername VARCHAR(50) NOT NULL,"
         + "message VARCHAR(500) NOT NULL);";
 
