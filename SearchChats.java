@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Random;
 
-
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.geometry.Pos;
@@ -30,7 +29,7 @@ import javafx.stage.Stage;
 import javafx.scene.input.MouseEvent;
 
 public class SearchChats {
-    public  Scene createSearchChatsScene(Stage primaryStage) {
+    public Scene createSearchChatsScene(Stage primaryStage) {
         AnchorPane root = new AnchorPane();
         root.setStyle("-fx-background-color: #0B0F1A;");
         HBox topMenu = new TopMenu().createTopMenu(primaryStage);
@@ -49,6 +48,7 @@ public class SearchChats {
         titleLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
         TextField searchField = new TextField();
         searchField.setPromptText("Search...");
+
         searchField.setPrefWidth(300);
         VBox.setMargin(titleLabel, new Insets(0, 0, 10, 0));
         VBox.setMargin(searchField, new Insets(0, 0, 10, 0));
@@ -59,47 +59,107 @@ public class SearchChats {
         scrollPane.setContent(chatList);
         VBox.setVgrow(scrollPane, Priority.ALWAYS);
 
-         //choosing random chats for recommendation in search chat
-         /*ArrayList<PublicChat> recommendedChats = new ArrayList<>();
-        Random random = new Random();
-         while (recommendedChats.size() < 10) {
-         int index = random.nextInt(publicChats.size());
-         PublicChat chat = publicChats.get(index);
-         if (!recommendedChats.contains(chat)) {
-         recommendedChats.add(chat);
-         }
-         }*/
+        // choosing 10 (if possible) random chats for recommendation in search chat
+        ArrayList<Integer> userChatIds = DatabaseHandler.getChats(Main.currentUser.getUsername());
+        ArrayList<Integer> allchats = DatabaseHandler.getAllChats();
 
-        /*for (PublicChat chat : recommendedChats) {
-        HBox chats = new HBox(10);
-        chatRow.setPadding(new Insets(5));
-        chatRow.setStyle("-fx-border-color: lightgray; -fx-border-radius: 5; -fx-border-width: 1;");*/
-        String ane[] = { "m", "a", "n", "i", "f", "e", "s", "t","a","tt" };
-        for (String harf : ane) {
+        ArrayList<Integer> recommendedChats = new ArrayList<>(allchats);
+        recommendedChats.removeAll(userChatIds);
+        Collections.shuffle(recommendedChats);
+        int limit = Math.min(10, recommendedChats.size());
+        for (int i = 0; i < limit; i++) {
+            int chatId = recommendedChats.get(i);
+            String chatName = DatabaseHandler.getChatName(chatId);
             HBox chatRow = new HBox(20);
             chatRow.setPadding(new Insets(5));
-            chatRow.setStyle("-fx-border-color: lightgray; -fx-border-radius: 5; -fx-border-width: 1;");
-            // chats' pp will be used here
-            Circle chatPPCircle = new Circle(20, Color.LIGHTBLUE);
-            Label harfs = new Label(harf); // replace with chatname
-            harfs.setPrefWidth(150);
-            Label lastMessage = new Label("last message");
-            lastMessage.setStyle("-fx-font-size: 12px;");
-            VBox chatInfoBox = new VBox(3, harfs, lastMessage);
+
+            String photoUrl = DatabaseHandler.getChatPhoto(chatId); 
+            ProfilePhoto pp = ProfilePhoto.fromString(photoUrl);
+            Circle chatPPCircle = pp.createCircle(18);
+            Label chatNameLbl = new Label(chatName);
+            chatNameLbl.setPrefWidth(150);
+            VBox chatInfoBox = new VBox(3, chatNameLbl);
             chatInfoBox.setPrefWidth(200);
-            //when join group is clicked, the seleced chat should be added to mychats
-            Button joinGroupBtn = new Button("Join Group");
-            Label memberCountLbl = new Label("122 members");
-            VBox joinBox = new VBox(3, joinGroupBtn, memberCountLbl);
+
+            VBox joinBox = new VBox(3);
             joinBox.setAlignment(Pos.CENTER_RIGHT);
             Region spacer = new Region();
             HBox.setHgrow(spacer, Priority.ALWAYS);
-            chatRow.getChildren().addAll(chatPPCircle, chatInfoBox, spacer, joinBox);
-            chatList.getChildren().add(chatRow);
-        }
+
+            Button joinGroupBtn = new Button("Join Group");
+            Label memberCountLbl = new Label(DatabaseHandler.getMemeberCount(chatId) + " members");
+            joinBox.getChildren().addAll(joinGroupBtn, memberCountLbl);
+
+            joinGroupBtn.setOnAction(e -> {
+                if (DatabaseHandler.addUserToChat(chatId, Main.currentUser.getUsername(), false)) {
+                    joinGroupBtn.setText("Joined!!");
+                    joinGroupBtn.setDisable(true);
+                    userChatIds.add(chatId);
+                }
+            });
+
+
+
 
         contentBox.getChildren().addAll(titleLabel, searchField, scrollPane);
         root.getChildren().addAll(topMenu, contentBox);
+        searchField.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent event) {
+                chatList.getChildren().clear();
+                String searchText = searchField.getText().trim();
+
+                if (!searchText.isEmpty()) {
+                    for (Integer chatId : allchats) {
+                        String chatName = DatabaseHandler.getChatName(chatId);
+
+                        if (chatName.contains(searchText)) {
+                            HBox chatRow = new HBox(20);
+                            chatRow.setPadding(new Insets(5));
+
+                            String photoUrl = DatabaseHandler.getChatPhoto(chatId);
+                            ProfilePhoto pp = ProfilePhoto.fromString(photoUrl);
+                            Circle chatPPCircle = pp.createCircle(18);
+                            Label chatNameLbl = new Label(chatName);
+                            chatNameLbl.setPrefWidth(150);
+                            VBox chatInfoBox = new VBox(3, chatNameLbl);
+                            chatInfoBox.setPrefWidth(200);
+
+                            VBox joinBox = new VBox(3);
+                            joinBox.setAlignment(Pos.CENTER_RIGHT);
+                            Region spacer = new Region();
+                            HBox.setHgrow(spacer, Priority.ALWAYS);
+
+                            if (!userChatIds.contains(chatId)) {
+                                Button joinGroupBtn = new Button("Join Group");
+                                Label memberCountLbl = new Label(DatabaseHandler.getMemeberCount(chatId) + " members");
+                                joinBox.getChildren().addAll(joinGroupBtn, memberCountLbl);
+
+                                joinGroupBtn.setOnAction(new EventHandler<ActionEvent>() {
+
+                                    public void handle(ActionEvent e) {
+                                        if (DatabaseHandler.addUserToChat(chatId, Main.currentUser.getUsername(), false)&&!DatabaseHandler.isChatPrivate(chatId)) {
+                                            joinGroupBtn.setText("Joined!!");
+                                            joinGroupBtn.setDisable(true);
+                                            userChatIds.add(chatId);
+                                        } else {
+                                            joinGroupBtn.setText("Impossible!!");
+                                            joinGroupBtn.setDisable(true);
+                                        }
+                                    }
+                                });
+                            } else {
+                                Label memberCountLbl = new Label(DatabaseHandler.getMemeberCount(chatId) + " members");
+                                joinBox.getChildren().add(memberCountLbl);
+                            }
+
+                            chatRow.getChildren().addAll(chatPPCircle, chatInfoBox, spacer, joinBox);
+                            chatList.getChildren().add(chatRow);
+                        }
+                    }
+                }
+            }
+        });
+
         return new Scene(root);
     }
 }
