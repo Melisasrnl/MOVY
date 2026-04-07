@@ -17,6 +17,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
 import java.util.List;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -54,16 +55,17 @@ public class MainPage {
     private static final double POSTER_WIDTH = 140.0;
     private static final double POSTER_HEIGHT = 210.0;
     private static final double SCROLL_AMOUNT = 400.0;
+    private final String DEFAULT_MOVIE_POSTER = "https://img.freepik.com/premium-photo/vertical-dark-red-paper-texture-with-noise-speckles_469558-46611.jpg";
 
+    //returns main page scene with top menu
     public Scene createMainPageScene(Stage primaryStage) throws Exception {
         this.stage = primaryStage;
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/movies/MainPage.fxml"));
         loader.setController(this);
         BorderPane root = loader.load();
+        TopMenu topMenu = new TopMenu();
+        root.setTop(topMenu.createTopMenu(primaryStage));
 
-        root.setTop(TopMenu.createTopMenu(primaryStage, currentUser));
-
-        primaryStage.setTitle("Movy");
         return new Scene(root);
     }
 
@@ -139,8 +141,8 @@ public class MainPage {
             }
 
             Label friendLabel = new Label(
-                movie.getRecommendedBy().getUsername());
-            friendLabel.setStyle("-fx-text-fill: #aaaaaa; -fx-font-size: 11px;");
+            movie.getRecommendedBy().getUsername());
+            friendLabel.setStyle("-fx-text-fill: #aaaaaa; -fx-font-size: 12px;");
 
             friendInfo.getChildren().addAll(friendAvatar, friendLabel);
             card.getChildren().add(friendInfo);
@@ -154,7 +156,7 @@ public class MainPage {
     }
 
     //goes to moviePage
-    private void goToMoviePage(Movie movie) {
+    public void goToMoviePage(Movie movie) {
         try {
             MoviePage moviePage = new MoviePage();
             Scene movieScene = moviePage.createAboutMovieScene(stage);
@@ -166,46 +168,131 @@ public class MainPage {
         }
     }
 
-    //pretty scroll with animation
+    
     private void scroll(ScrollPane scrollPane, double amount) {
-        double contentWidth = scrollPane.getContent().getBoundsInLocal().getWidth();
-        double viewWidth = scrollPane.getViewportBounds().getWidth();
-        double scrollable = contentWidth - viewWidth;
-        if (scrollable <= 0) return;
+        double totalWidth = scrollPane.getContent().getBoundsInLocal().getWidth();
+        double visibleWidth = scrollPane.getViewportBounds().getWidth();
 
-        double current = scrollPane.getHvalue();
-        double step = amount / scrollable;
-        double target = Math.max(0, Math.min(scrollPane.getHmax(), current + step));
+        double maxScrollableWidth = totalWidth - visibleWidth;
+        if (maxScrollableWidth <= 0) {
+            return;
+        }
+        double stepRatio = amount / maxScrollableWidth;
+        double newPosition = scrollPane.getHvalue() + stepRatio;
 
-        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(350),new KeyValue(scrollPane.hvalueProperty(), target)));
-        timeline.play();
+        if (newPosition < 0.0) {
+            newPosition = 0.0;
+        }
+        if (newPosition > 1.0) {
+            newPosition = 1.0;
+        }
+        scrollPane.setHvalue(newPosition);  
+
     }
 
-    //preadded movies
+    
     private List<Movie> getPopularMovies() {
-        Movie m1 = new Movie("The Notebook",     "1"); 
-        m1.setPosterUrl("https://m.media-amazon.com/images/M/MV5BMTk3OTM5Njg5M15BMl5BanBnXkFtZTYwMzA0ODI3._V1_.jpg");
-        Movie m2 = new Movie("Eternal Sunshine",  "2"); 
-        m2.setPosterUrl("https://m.media-amazon.com/images/M/MV5BMTY4NzcwODg3Nl5BMl5BanBnXkFtZTcwNTEwOTMyMw@@._V1_.jpg");
-        Movie m3 = new Movie("How to Lose a Guy in 10 Days","3"); 
-        m3.setPosterUrl("https://m.media-amazon.com/images/M/MV5BMTQyNzMzNjA0NF5BMl5BanBnXkFtZTYwNzQyNTY3._V1_.jpg");
-        return List.of(m1, m2, m3);
+        ArrayList<Movie> popularMovies = new ArrayList<>();
+        
+        ArrayList<Integer> popularsIDs = TmdbService.getPopularMovies();
+
+        int movieNumber = Math.min(20, popularsIDs.size());
+
+        for (int i = 0; i < movieNumber; i++) {
+            Integer movieId = popularsIDs.get(i);
+
+            String movieName = "Unknown Title";
+            String moviePosterUrl = DEFAULT_MOVIE_POSTER;
+
+            try {
+                movieName = TmdbService.getMovieName(movieId);
+                String moviePosterPath = TmdbService.getMoviePhotoUrl(movieId);
+                if (moviePosterPath != null && !moviePosterPath.equals("null") && !moviePosterPath.isEmpty()) {
+                    moviePosterUrl = "https://image.tmdb.org/t/p/w500" + moviePosterPath;
+                }
+            } catch (Exception e) {
+                System.out.println("cant get popular movie poster");
+            }
+            
+
+            Movie movie = new Movie(movieName, movieId);
+            movie.setPosterUrl(moviePosterUrl);
+            popularMovies.add(movie);
+        }
+        return popularMovies;
     }
 
     private List<Movie> getLatestMovies() {
-        Movie m1 = new Movie("Inception",   "4"); m1.setPosterUrl("https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_.jpg"); m1.setNew(true);
-        Movie m2 = new Movie("Interstellar", "5"); m2.setPosterUrl("https://m.media-amazon.com/images/M/MV5BZjdkOTU3MDktN2IxOS00OGEyLWFmMjktY2FiMmZkNWIyODZiXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg");
-        Movie m3 = new Movie("Dune",  "6"); m3.setPosterUrl("https://m.media-amazon.com/images/M/MV5BN2FjNmEyNWMtYzM0ZS00NjIyLTg4YzYtYThlMGVjNzE1OGViXkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_.jpg"); m3.setNew(true);
-        return List.of(m1, m2, m3);
+        ArrayList<Movie> latestMovies = new ArrayList<>();
+        
+        ArrayList<Integer> latestsIDs = TmdbService.getLatestReleasesMovies();
+
+        int movieNumber = Math.min(20, latestsIDs.size());
+
+        for (int i = 0; i < movieNumber; i++) {
+            Integer movieId = latestsIDs.get(i);
+
+            String movieName = "Unknown Title";
+            String moviePosterUrl = DEFAULT_MOVIE_POSTER;
+
+            try {
+                movieName = TmdbService.getMovieName(movieId);
+                String moviePosterPath = TmdbService.getMoviePhotoUrl(movieId);
+                if (moviePosterPath != null && !moviePosterPath.equals("null") && !moviePosterPath.isEmpty()) {
+                    moviePosterUrl = "https://image.tmdb.org/t/p/w500" + moviePosterPath;
+                }
+
+            } catch (Exception e) {
+                System.out.println("cant get latest movie poster");
+            }
+            Movie movie = new Movie(movieName, movieId);
+            movie.setPosterUrl(moviePosterUrl);
+            latestMovies.add(movie);
+            
+        }
+        return latestMovies;
+        
     }
 
+    //returns arraylist of recommended movies by friends
     private List<Movie> getFriendsMovies() {
-        User mina  = new User("mina",  "mina@mail.com",  2L);
-        User bensu = new User("bensu", "bensu@mail.com", 3L);
+        ArrayList<Movie> recommendedMovies = new ArrayList<>();
+        if (currentUser == null) {
+            return recommendedMovies;
+        }
+        String currentUsersName = currentUser.getUsername();
+        ArrayList<Integer> recommendedMovieIds = DatabaseHandler.getMoviesFromRecomendedByFriends(currentUsersName);
 
-        Movie m1 = new Movie("Interstellar", "5"); m1.setPosterUrl("https://m.media-amazon.com/images/M/MV5BZjdkOTU3MDktN2IxOS00OGEyLWFmMjktY2FiMmZkNWIyODZiXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg"); m1.setRecommendedBy(mina); 
-        Movie m2 = new Movie("Whiplash",   "7"); m2.setPosterUrl("https://m.media-amazon.com/images/M/MV5BOTA5NDZlZGUtMjAxOS00YTRkLTkwYmMtYWQ0NWEwZDZiNjEzXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg"); m2.setRecommendedBy(mina);  
-        Movie m3 = new Movie("Catch Me If You Can", "8"); m3.setPosterUrl("https://m.media-amazon.com/images/M/MV5BOTY4ODY3OTctZTllNS00NTM4LWFlNzItYzgwYzkzNDFjYjEyXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_.jpg"); m3.setRecommendedBy(bensu); 
-        return List.of(m1, m2, m3);
+        for (int i = 0; i < recommendedMovieIds.size(); i++) {
+            Integer recommendedMovieId = recommendedMovieIds.get(i);
+
+            String friendUsername = DatabaseHandler.whoRecomended(currentUsersName, recommendedMovieIds.get(i));
+            String friendEmail = DatabaseHandler.userStringGetter("email", "username", friendUsername);
+            User friend = new User(friendUsername, friendEmail);
+            String ppURL = DatabaseHandler.userStringGetter("profilepic", "username", friendUsername);
+            friend.setProfilePhoto(ProfilePhoto.fromString(ppURL));
+
+            String recommendedMovieName = "unknown title";
+            String moviePosterUrl = DEFAULT_MOVIE_POSTER;
+
+            try {
+                recommendedMovieName = TmdbService.getMovieName(recommendedMovieId);
+                String moviePosterPath = TmdbService.getMoviePhotoUrl(recommendedMovieId);
+                if (moviePosterPath != null && !moviePosterPath.equals("null") && !moviePosterPath.isEmpty()) {
+                    moviePosterUrl = "https://image.tmdb.org/t/p/w500" + moviePosterPath;
+                }
+            } catch (Exception e) {
+                System.out.println("cant get recommended movie poster");
+            }
+            
+
+            Movie recommendedMovie = new Movie( recommendedMovieName , recommendedMovieId);
+            recommendedMovie.setPosterUrl(moviePosterUrl);
+            recommendedMovie.setRecommendedBy(friend); 
+            
+            recommendedMovies.add(recommendedMovie);
+        }
+
+        return recommendedMovies;
     }
 }
