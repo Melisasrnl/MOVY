@@ -1169,6 +1169,7 @@ public class DatabaseHandler {
 
     //Create chats table. this table contains all of the chats. after creating this table once this method
     //wont be use again and will be put in comment lines.
+    /*
     public static void createChatsTable(){
         String sql = "CREATE TABLE IF NOT EXISTS chats( id INTEGER PRIMARY KEY AUTO_INCREMENT,"
         + "chatname VARCHAR(50) NOT NULL,"
@@ -1188,6 +1189,7 @@ public class DatabaseHandler {
             System.out.println("CREATING ALL CHATS TABLE: " + e.getMessage());
         }
     }
+    */
 
     //get isChat private ethod
     public static boolean isChatPrivate(Integer movieId){
@@ -1692,7 +1694,7 @@ public class DatabaseHandler {
         return false;
     }
 
-    //This method returns an string arrayli,st that contains the list of the users existing in the chat
+    //This method returns an string arraylist that contains the list of the users existing in the chat
     public static ArrayList<String> getUserList(Integer chatId){
 
         String sql = "SELECT username FROM " + chatId + "susers";
@@ -1744,6 +1746,7 @@ public class DatabaseHandler {
 
     //This method will be only used once to create the comments table. comment will be null if the user only wants to rate and not comment
     //rate is not null. to make a comment the user needs to rate. After using thşs method once keep this method in comment lines
+    /*
     public static void createCommentsTable(){
 
         String sql = "CREATE TABLE IF NOT EXISTS comments (id INTEGER PRIMARY KEY AUTO_INCREMENT,"
@@ -1755,7 +1758,7 @@ public class DatabaseHandler {
         try(Connection conn = connect();
         Statement stmt = conn.createStatement()){
 
-            stmt.executeQuery(sql);
+            stmt.execute(sql);
             System.out.println("COMMENTS TABLE CREATED SUCCESSFULLY");
 
         }catch(SQLException e){
@@ -1763,6 +1766,7 @@ public class DatabaseHandler {
             System.out.println("CREATING COMMENTS TABLE ERROR: " + e.getMessage());
         }
     }
+    */
 
     //This method adds a new comment
     public static boolean newComment( String user, String comment, Integer rate, Integer movieId){
