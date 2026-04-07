@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Movie {
 
-    protected String id;
+    protected Integer id;
     protected String title;
     protected int releaseYear;
     protected String director;
@@ -23,13 +23,13 @@ public class Movie {
     private User   recommendedBy; // arkadas satiri icin
 
 
-    public Movie(String movieTitle, String movieId) {
+    public Movie(String movieTitle, Integer movieId) {
         this.id = movieId;
         this.title = movieTitle;
     }
 
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
  
