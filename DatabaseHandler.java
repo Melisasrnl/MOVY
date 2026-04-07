@@ -1564,6 +1564,76 @@ public class DatabaseHandler {
 
     }
 
+    //get all chats method
+    public static ArrayList<String> getAllChats(){
+
+        String sql = "SELECT id FROM chats";
+        ArrayList<String> list = new ArrayList<String>();
+
+        try(Connection conn = connect();
+        Statement stmt = conn.createStatement()){
+
+            ResultSet rs = stmt.executeQuery(sql);
+
+            while(rs.next()){
+                list.add(rs.getString(1));
+            }
+        }catch(SQLException e){
+
+            System.out.println("GET ALL CHATS ERROR: " + e.getMessage());
+
+        }
+
+        return list;
+    }
+
+    //Get all messages of a chat and the users that send the messages. the index of two array list
+    //will match. the user in an index will send message in the same index message
+    public static ArrayList<String> getAllMessages(Integer chatID){
+
+        String sql = "SELECT message FROM " + chatID + "smessages";
+        ArrayList<String> list = new ArrayList<String>();
+
+        try(Connection conn= connect();
+        Statement stmt = conn.createStatement()){
+
+            ResultSet rs = stmt.executeQuery(sql);
+
+            while(rs.next()){
+
+                list.add(rs.getString(1));
+            }
+
+        }catch(SQLException e){
+
+            System.out.println("GET MESSAGES ERROR: " + e.getMessage());
+        }
+
+        return list;
+    }
+    public static ArrayList<String> getAllMessagesSenders(Integer chatID){
+
+        String sql = "SELECT sendername FROM " + chatID + "smessages";
+        ArrayList<String> list = new ArrayList<String>();
+
+        try(Connection conn= connect();
+        Statement stmt = conn.createStatement()){
+
+            ResultSet rs = stmt.executeQuery(sql);
+
+            while(rs.next()){
+
+                list.add(rs.getString(1));
+            }
+            
+        }catch(SQLException e){
+
+            System.out.println("GET MESSAGES SENDERS NAME ERROR: " + e.getMessage());
+        }
+
+        return list;
+    }
+
     //get user role in chat(to check if the user is an admin or not while editing). returns true if 
     //the user is an admin
     public static boolean isAdmin(Integer chatId, String username){
