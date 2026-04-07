@@ -18,7 +18,7 @@ import java.util.ArrayList;
 public class DatabaseHandler {
 
     //These are the information of our database to set the database url
- 
+    
 
     //Combining the information above to form the database url
     private static final String DB_URL = "jdbc:mysql://" + HOST + ":" + PORT + "/" + DB_NAME + "?useSSL=true";
@@ -515,7 +515,6 @@ public class DatabaseHandler {
 
         String sql = "CREATE TABLE IF NOT EXISTS " + username + "scollections ( id INTEGER PRIMARY KEY AUTO_INCREMENT, "
                     + "collectionname VARCHAR(50) NOT NULL UNIQUE,"
-                    + "moviecount INTEGER NOT NULL DEFAULT 0, "
                     + "private BOOLEAN);";
 
         try(Connection conn = connect();
@@ -665,7 +664,7 @@ public class DatabaseHandler {
     //Create a new collection table
     public static boolean newCollection(String collectionName, String user, Boolean isPrivate){
 
-        String sql = "CREATE TABLE IF NOT EXISTS " + user + "s" + collectionName + "(id INTEGER PRIMARY KEY AUTO_INCREMENT, "
+        String sql = "CREATE TABLE IF NOT EXISTS " + user + "s" + collectionName + " (id INTEGER PRIMARY KEY AUTO_INCREMENT, "
                     + "movieid INTEGER UNIQUE);";
 
         String sqltwo = "INSERT INTO " + user + "scollections (collectionname,private) VALUES (?,?)";
@@ -692,6 +691,155 @@ public class DatabaseHandler {
         return false;
     }
 
+    //This method adds a new movie to the collection of the user
+    public static boolean addMovieToCollection( String username, Integer movieID, String collectionName){
+
+        String sql = "INSERT INTO " + username + "s" + collectionName + " (movieid) VALUES (?)";
+
+        try(Connection conn = connect();
+        PreparedStatement pstmt = conn.prepareStatement(sql)){
+
+            pstmt.setInt(1, movieID);
+            pstmt.executeUpdate();
+
+            System.out.println("ADDED MOVIE TO COLLECTION SUCCESSFULLY");
+            return true;
+        }catch(SQLException e){
+
+            System.out.println("ADD MOVIE TO COLLECTION ERROR: " + e.getMessage());
+
+        }
+
+        return false;
+    }
+
+    //Deleting a movie from the collection
+    public static boolean deleteMovieFromCollection (String user, String collection, Integer movieId){
+
+        String sql = "DELETE FROM " + user + "s" + collection + " WHERE movieid = ?";
+
+        try(Connection conn = connect();
+        PreparedStatement pstmt = conn.prepareStatement(sql)){
+
+            pstmt.setInt(1, movieId);
+            pstmt.executeUpdate();
+
+            System.out.println("DELETED MOVIE FROM COLLECTION SUCCESSFULLY");
+            return true;
+        }catch(SQLException e){
+            System.out.println("DELETING MOVIE FROM COLLECTION ERROR: " + e.getMessage());
+        }
+
+        return false;
+    }
+
+    //This method adds a new movie to the favorites of the user
+    public static boolean addMovieToFavorites( String username, Integer movieID){
+
+        String sql = "INSERT INTO " + username + "sfavorites (movieid) VALUES (?)";
+
+        try(Connection conn = connect();
+        PreparedStatement pstmt = conn.prepareStatement(sql)){
+
+            pstmt.setInt(1, movieID);
+            pstmt.executeUpdate();
+
+            System.out.println("ADDED MOVIE TO FAVORITES SUCCESSFULLY");
+            return true;
+        }catch(SQLException e){
+
+            System.out.println("ADD MOVIE TO FAVORITES ERROR: " + e.getMessage());
+
+        }
+
+        return false;
+    }
+
+    //Deleting a movie from the favorites
+    public static boolean deleteMovieFromFavorites (String user,Integer movieId){
+
+        String sql = "DELETE FROM " + user + "sfavorites WHERE movieid = ?";
+
+        try(Connection conn = connect();
+        PreparedStatement pstmt = conn.prepareStatement(sql)){
+
+            pstmt.setInt(1, movieId);
+            pstmt.executeUpdate();
+
+            System.out.println("DELETED MOVIE FROM FAVORITES SUCCESSFULLY");
+            return true;
+        }catch(SQLException e){
+            System.out.println("DELETING MOVIE FROM FAVORITES ERROR: " + e.getMessage());
+        }
+
+        return false;
+    }
+
+    //This method adds a new movie to the recentWatches of the user
+    public static boolean addMovieToRecentWatches( String username, Integer movieID){
+
+        String sql = "INSERT INTO " + username + "srecentwatches (movieid) VALUES (?)";
+
+        try(Connection conn = connect();
+        PreparedStatement pstmt = conn.prepareStatement(sql)){
+
+            pstmt.setInt(1, movieID);
+            pstmt.executeUpdate();
+
+            System.out.println("ADDED MOVIE TO RECENT WATCHES SUCCESSFULLY");
+            return true;
+        }catch(SQLException e){
+
+            System.out.println("ADD MOVIE TO RECENT WATCHES ERROR: " + e.getMessage());
+
+        }
+
+        return false;
+    }
+
+    //Deleting a movie from the recentWatches
+    public static boolean deleteMovieFromRecentWatches (String user,Integer movieId){
+
+        String sql = "DELETE FROM " + user + "srecentwatches WHERE movieid = ?";
+
+        try(Connection conn = connect();
+        PreparedStatement pstmt = conn.prepareStatement(sql)){
+
+            pstmt.setInt(1, movieId);
+            pstmt.executeUpdate();
+
+            System.out.println("DELETED MOVIE FROM RECENT WATCHES SUCCESSFULLY");
+            return true;
+        }catch(SQLException e){
+            System.out.println("DELETING MOVIE FROM RECENT WATCHES ERROR: " + e.getMessage());
+        }
+
+        return false;
+    }
+
+    //recomend to friend method. user is the one who recomends and the movie is 
+    //saved to the friend's recomended by friends table
+    public static boolean recomendToFriend(String user, String friend, Integer movieId){
+
+        String sql = "INSERT INTO " + friend + "srecomendedbyfriends (movieid, friend) VALUES (?,?)";
+
+        try(Connection conn = connect();
+        PreparedStatement pstmt = conn.prepareStatement(sql)){
+
+            pstmt.setInt(1, movieId);
+            pstmt.setString(2, user);
+            pstmt.executeUpdate();
+
+            System.out.println("RECOMENDED TO FRIEND SUCCESSFULLY");
+            return true;
+
+        }catch(SQLException e){
+            System.out.println("RECOMEND TO FRIEND ERROR: " + e.getMessage());
+        }
+
+        return false;
+    }
+
     //Deleting a collection
     public static boolean deleteCollection(String collectionName, String username){
 
@@ -713,6 +861,59 @@ public class DatabaseHandler {
 
         }catch(SQLException e){
             System.out.println("DELETING COLLECTION ERROR: " + e.getMessage());
+        }
+
+        return false;
+    }
+
+    //This method returns the boolean of the collections isPrivate. if true the collection is private
+    public static boolean isCollectionPrivate(String user, String collectionName){
+
+        String sql = "SELECT private FROM " + user + "scollections WHERE collectionname = ?";
+
+        try(Connection conn = connect();
+        PreparedStatement pstmt = conn.prepareStatement(sql)){
+
+            pstmt.setString(1, collectionName);
+
+            ResultSet rs = pstmt.executeQuery();
+            if(rs.next()){
+
+                System.out.println("GET IS PRIVATE COLLECTION SUCCESSFULL");
+                return rs.getBoolean(1);
+            }
+        }catch(SQLException e){
+            System.out.println("GET IS PRIVATE COLLECTION ERROR: " + e.getMessage());
+        }
+
+        return false;
+    }
+
+    //This method returns true if the two entered users are following eachother
+    public static boolean isFriend(String userone, String usertwo){
+
+        String sql = "SELECT COUNT(*) FROM followingstable WHERE user = ? AND following = ?";
+        
+        try(Connection conn = connect();
+        PreparedStatement pstmtone = conn.prepareStatement(sql);
+        PreparedStatement pstmttwo = conn.prepareStatement(sql)){
+
+            pstmtone.setString(1, userone);
+            pstmtone.setString(2, usertwo);
+
+            pstmttwo.setString(1, usertwo);
+            pstmttwo.setString(2, userone);
+
+            ResultSet rsone = pstmtone.executeQuery();
+            ResultSet rstwo = pstmttwo.executeQuery();
+
+            if(rsone.next() && rstwo.next()){
+
+                return ((rsone.getInt(1) > 0) && (rstwo.getInt(1) > 0));
+            }
+        }catch(SQLException e){
+
+            System.out.println("IS FRIEND ERROR: " + e.getMessage());
         }
 
         return false;
@@ -1369,5 +1570,29 @@ public class DatabaseHandler {
 
         return list;
     }
+
+    //This method will be only used once to create the comments table. comment will be null if the user only wants to rate and not comment
+    //rate is not null. to make a comment the user needs to rate. After using thşs method once keep this method in comment lines
+    public static void createCommentsTable(){
+
+        String sql = "CREATE TABLE IF NOT EXISTS comments (id INTEGER PRIMARY KEY AUTO_INCREMENT,"
+        + "user VARCHAR(50) NOT NULL UNIQUE, "
+        + "comment VARCHAR(500), "
+        + "rate INTEGER NOT NULL, "
+        + "movieid INTEGER NOT NULL);";
+
+        try(Connection conn = connect();
+        Statement stmt = conn.createStatement()){
+
+            stmt.executeQuery(sql);
+            System.out.println("COMMENTS TABLE CREATED SUCCESSFULLY");
+
+        }catch(SQLException e){
+
+            System.out.println("CREATING COMMENTS TABLE ERROR: " + e.getMessage());
+        }
+    }
+
+
 }
 
