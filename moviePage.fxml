@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #0c111b;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.movies.MoviePage">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #0c111b;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
    <left>
       <VBox alignment="CENTER_RIGHT" prefHeight="340.0" prefWidth="171.0" BorderPane.alignment="CENTER">
          <children>
@@ -57,24 +57,6 @@
                <VBox.margin>
                   <Insets />
                </VBox.margin>
-            </HBox>
-            <HBox fx:id="favoritesNumBox" alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="164.0" spacing="5.0">
-               <children>
-                  <ImageView fx:id="heartImage" fitHeight="25.0" fitWidth="26.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@notLiked.png" />
-                     </image>
-                     <HBox.margin>
-                        <Insets left="60.0" />
-                     </HBox.margin></ImageView>
-                  <Label fx:id="likeLbl" text="3.4M" textFill="WHITE">
-                     <HBox.margin>
-                        <Insets bottom="4.0" top="10.0" />
-                     </HBox.margin>
-                     <font>
-                        <Font size="15.0" />
-                     </font></Label>
-               </children>
             </HBox>
          </children>
          <padding>
@@ -186,7 +168,7 @@
                      </image>
                   </ImageView>
                </graphic></Button>
-            <Button fx:id="addToListBtn" mnemonicParsing="false" onAction="#handleAddToList" prefHeight="55.0" prefWidth="57.0" style="-fx-background-radius: 50; -fx-min-width: 45; -fx-min-height: 45; -fx-background-color: #1a212e;" textFill="WHITE">
+            <Button fx:id="chooseListBtn" mnemonicParsing="false" onAction="#handleChooseList" prefHeight="55.0" prefWidth="57.0" style="-fx-background-radius: 50; -fx-min-width: 45; -fx-min-height: 45; -fx-background-color: #1a212e;" textFill="WHITE">
                <VBox.margin>
                   <Insets top="10.0" />
                </VBox.margin>
@@ -207,7 +189,6 @@
                         <Font size="15.0" />
                      </font>
                   </Label>
-                  <Button fx:id="addToWatchListBtn" mnemonicParsing="false" prefWidth="103.0" text="WatchList" />
                </children>
             </VBox>
             <Button fx:id="recommendToBtn" mnemonicParsing="false" onAction="#handleRecommendToFriend" prefHeight="51.0" prefWidth="56.0" style="-fx-background-radius: 50; -fx-min-width: 45; -fx-min-height: 45; -fx-background-color: #1a212e;" textFill="WHITE">
@@ -224,7 +205,6 @@
             <VBox fx:id="recommendToListVBox" managed="false" prefHeight="200.0" prefWidth="100.0" visible="false">
                <children>
                   <Label text="Recommend to.." textFill="WHITE" />
-                  <Button fx:id="aFriendBtn" mnemonicParsing="false" prefHeight="26.0" prefWidth="100.0" text="Ekinsu" wrapText="true" />
                </children>
             </VBox>
             <Button fx:id="markAsWatchedBtn" mnemonicParsing="false" onAction="#handleMarkAsWatched" prefHeight="53.0" prefWidth="57.0" style="-fx-background-radius: 50; -fx-min-width: 45; -fx-min-height: 45; -fx-background-color: #1a212e;" textFill="WHITE">
@@ -240,4 +220,3 @@
       </VBox>
    </right>
 </BorderPane>
-
