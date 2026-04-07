@@ -65,6 +65,7 @@ public class TopMenu {
         searchFriendsButton.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent event) {
                 // new scene will be added
+                stage.setScene(new SearchFriends().choose(stage));
                 System.out.println("search friends is working");
             }
         });
@@ -75,6 +76,7 @@ public class TopMenu {
         searchButton.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent event) {
                 // new scene will be added
+               stage.setScene(new SearchEngine().choose(stage));
                 System.out.println("searching is working");
             }
         });
@@ -90,11 +92,15 @@ public class TopMenu {
 
         searchChats.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent event) {
+                stage.setScene(new SearchChats().createSearchChatsScene(stage));
+                System.out.println("searching chats is working");
             }
         });
 
         myChats.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent event) {
+                stage.setScene(new MyChats().createMyChatsScene(stage));
+                System.out.println("mychats button is working");
             }
         });
 
