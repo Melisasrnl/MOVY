@@ -71,21 +71,22 @@ public class SignIn{
                 String password = passwordTxt.getText();
 
                 if(DatabaseHandler.createNewUser(name, password, mail)){
-                    //creating the currentUser
-                    long id = DatabaseHandler.userIntegerGetter("id", "username", name);
-                    Main.currentUser = new User(name, mail, id);
-                    //setting the default pp (not sure about that part... pls check the new methods in the ProfilePhoto class
-                    String ppURL = DatabaseHandler.userStringGetter("profilepic", "username", name);
-                    Main.currentUser.setProfilePhoto(ProfilePhoto.fromString(ppURL));
 
-                    //Open this lines after creating the home scene
-                    //this part should be modified
-                    /*
-                    HomePage home = new HomePage();
-                    Scene nextScene = new Scene(home.getContent());
-                    StartingPage.changeScene(nextScene);
-                    */
-                   //System.out.println("worked!");
+                    MainPage mainPage = new MainPage();
+                    try {
+                        Scene nextScene = mainPage.createMainPageScene(primaryStage);
+                        StartingPage.changeScene(nextScene);
+
+                        App.currentUser = new User(name, mail);
+                        App.currentUser.setProfilePhoto(ProfilePhoto.DEFAULT);
+                        mainPage.setData(App.currentUser, null);
+                        StartingPage.changeScene(nextScene);
+
+                        
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    
                 }
                 else{
                     warning.showAndWait();
