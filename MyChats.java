@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Random;
+
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.geometry.Pos;
@@ -48,19 +49,6 @@ public class MyChats {
         createNewChatBtn.setStyle("-fx-font-weight: bold; -fx-font-size: 18px;");
         createNewChatBtn.setPrefSize(40, 40);
         createNewChatBtn.setTooltip(new Tooltip("Create New Group Chat"));
-        createNewChatBtn.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            public void handle(MouseEvent e) {
-                stage.setScene(new CreateNewGroupChat().createNewGroupChatScene(stage));
-            }
-        });
-
-        HBox titleLine = new HBox(10);
-        titleLine.setAlignment(Pos.CENTER_LEFT);
-        titleLabel.setMaxWidth(Double.MAX_VALUE);
-        HBox.setHgrow(titleLabel, Priority.ALWAYS);
-        titleLine.getChildren().addAll(titleLabel, createNewChatBtn);
-        TextField searchField = new TextField();
-        searchField.setPromptText("Search...");
         searchField.setPrefWidth(300);
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.setFitToWidth(true);
@@ -68,36 +56,75 @@ public class MyChats {
         chatList.setPadding(new Insets(5));
         scrollPane.setContent(chatList);
         VBox.setVgrow(scrollPane, Priority.ALWAYS);
+        createNewChatBtn.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent e) {
+                stage.setScene(new CreateNewGroupChat().createNewGroupChatScene(stage));
+            }
+        });
+        ArrayList<Integer> chatIds = DatabaseHandler.getChats(Main.currentUser.getUsername());
+        HBox titleLine = new HBox(10);
+        titleLine.setAlignment(Pos.CENTER_LEFT);
+        titleLabel.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(titleLabel, Priority.ALWAYS);
+        titleLine.getChildren().addAll(titleLabel, createNewChatBtn);
+        TextField searchField = new TextField();
+        searchField.setPromptText("Search...");
+        String searchResult = searchField.getText();
+        for (Integer chat : chatIds) {
+            String chatName = DatabaseHandler.getChatName(chat);
+            if (chatName.equals(searchResult)) {
+                HBox box = new HBox();
+                ProfilePhoto chatPP = ProfilePhoto.fromString(DatabaseHandler.getChatPhoto(chat));
+                Circle chatPPCircle = chatPP.createCircle(20);
+                Label chatNameLbl = new Label(chatName);
+                box.getChildren().addAll(chatPPCircle, chatNameLbl);
+                box.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                    public void handle(MouseEvent e) {
+                        //choosing the chat
+                        Main.currentChat = chat;
+                        stage.setScene(new InsideChat(chat).createInsideChatScene(stage));
+                    }
+                });
+                chatList.getChildren().add(box);
+            }
+        }
 
-        // mychats will be replaced with that
-        String ane[] = { "m", "a", "n", "i", "f", "e", "s", "t", "a", "tt" };
-        for (String harf : ane) {
-            HBox chatRow = new HBox(20);
-            chatRow.setPadding(new Insets(5));
-            chatRow.setStyle("-fx-border-color: lightgray; -fx-border-radius: 5; -fx-border-width: 1;");
-            String thisHarf = harf;
-            chatRow.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                public void handle(MouseEvent e) {
-                    stage.setScene(new InsideChat().createInsideChatScene(stage));
-                    System.out.println("Clicked: " + thisHarf);
-                }
-            });
-            // chats' pp will be used here
-            Circle chatPPCircle = new Circle(20, Color.LIGHTBLUE);
-            Label harfs = new Label(harf); // replace with chatname
-            harfs.setPrefWidth(150);
-            Label lastMessage = new Label("last message");
-            lastMessage.setStyle("-fx-font-size: 12px;");
-            VBox chatInfoBox = new VBox(3, harfs, lastMessage);
-            chatInfoBox.setPrefWidth(200);
-            // member count will be corrected later on
-            Label memberCountLbl = new Label("122 members");
-            VBox joinBox = new VBox(3, memberCountLbl);
-            joinBox.setAlignment(Pos.CENTER_RIGHT);
-            Region spacer = new Region();
-            HBox.setHgrow(spacer, Priority.ALWAYS);
-            chatRow.getChildren().addAll(chatPPCircle, chatInfoBox, spacer, joinBox);
-            chatList.getChildren().add(chatRow);
+        
+            if (chatIds.isEmpty()) {
+                Label noChatsFound = new Label("No chats are created yet");
+                chatList.getChildren().add(noChatsFound);
+            }
+            else {
+            
+                for (int chat : chatIds) {
+                HBox chatRow = new HBox(20);
+                chatRow.setPadding(new Insets(5));
+                String chatName = DatabaseHandler.getChatName(chat);
+                chatRow.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                    public void handle(MouseEvent e) {
+                        //do not forget to add 
+                        //  public static Integer currentChat= null;
+                        //to the main
+                        Main.currentChat = chat;
+                        stage.setScene(new InsideChat(chat).createInsideChatScene(stage));
+                    }
+                });
+                String urlPP = DatabaseHandler.getChatPhoto(chat);
+                ProfilePhoto chatPP = ProfilePhoto.fromString(urlPP);
+                Circle chatPPCircle = chatPP.createCircle(20);
+                Label chatsName = new Label(chatsName);
+                chatsName.setPrefWidth(150);
+                VBox chatInfoBox = new VBox(3, chatsName);
+                chatInfoBox.setPrefWidth(200);
+                Integer memberCount = DatabaseHandler.getMemeberCount(chat);
+                Label memberCountLbl = new Label(memberCount);
+                VBox joinBox = new VBox(3, memberCountLbl);
+                joinBox.setAlignment(Pos.CENTER_RIGHT);
+                Region spacer = new Region();
+                HBox.setHgrow(spacer, Priority.ALWAYS);
+                chatRow.getChildren().addAll(chatPPCircle, chatInfoBox, spacer, joinBox);
+                chatList.getChildren().add(chatRow);
+            }
         }
 
         contentBox.getChildren().addAll(titleLine, searchField, scrollPane);
