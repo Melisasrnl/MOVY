@@ -1593,6 +1593,151 @@ public class DatabaseHandler {
         }
     }
 
+    //This method adds a new comment
+    public static boolean newComment( String user, String comment, Integer rate, Integer movieId){
 
+        String sql = "INSERT INTO comments (user, comment, rate, movieid) VALUES (?,?,?,?)";
+
+        try(Connection conn = connect();
+        PreparedStatement pstmt = conn.prepareStatement(sql)){
+
+            pstmt.setString(1, user);
+            pstmt.setString(2, comment);
+            pstmt.setInt(3, rate);
+            pstmt.setInt(4, movieId);
+
+            pstmt.executeUpdate();
+
+            System.out.println("NEW COMMENT SUCCESSFULL");
+
+            return true;
+
+        }catch(SQLException e){
+            System.out.println("NEW COMMENT ERROR: " + e.getMessage());
+        }
+
+        return false;
+
+    }
+
+
+    //This method gets the total rate
+    public static double getRateAvarage(Integer movieId){
+
+        String sql = "SELECT rate FROM comments WHERE movieid = ?";
+        int count = 0;
+        int total = 0;
+
+        try(Connection conn = connect();
+        PreparedStatement pstmt = conn.prepareStatement(sql)){
+
+            pstmt.setInt(1, movieId);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            while(rs.next()){
+                count++;
+                total += rs.getInt(1);
+            }
+            if(count == 0){
+
+                return 0;
+            }
+            else{
+                return ((double)total / count);
+            }
+
+        }catch(SQLException e){
+
+            System.out.println("GET TOTAL RATE ERROR: " + e.getMessage());
+        }
+
+        return -1;
+    }
+
+    //Get comment users. the indexes match with the comments
+    public static ArrayList<String> getCommentedUsersList(Integer movieId){
+
+        String sql = "SELECT user FROM comments WHERE movieid = ?";
+        ArrayList<String> list = new ArrayList<String>(); 
+
+        try(Connection conn = connect();
+        PreparedStatement pstmt = conn.prepareStatement(sql)){
+
+            pstmt.setInt(1, movieId);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            while(rs.next()){
+
+                list.add(rs.getString(1));
+
+            }
+            
+            return list;
+
+        }catch(SQLException e){
+
+            System.out.println("GET COMMENT USERS ERROR: " + e.getMessage());
+
+        }
+
+        return list;
+
+    }
+
+    //Get rate
+    public static Integer getRate (String user, Integer movieId){
+
+        String sql = "SELECT rate FROM comments WHERE movieid = ? AND user = ?";
+
+        try(Connection conn = connect();
+        PreparedStatement pstmt = conn.prepareStatement(sql)){
+
+            pstmt.setInt(1,movieId);
+            pstmt.setString(2, user);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            if(rs.next()){
+
+                return rs.getInt(1);
+            }
+
+        }catch(SQLException e){
+
+            System.out.println("GET RATE ERROR: " + e.getMessage());
+        }
+
+        return 0;
+    }
+
+    //This method returns the comment that a user wrote for a movie
+    public static String getComment (String user, Integer movieId){
+
+        String sql = "SELECT comment FROM comments WHERE user = ? AND movieid = ?";
+
+        try(Connection conn = connect();
+        PreparedStatement pstmt = conn.prepareStatement(sql)){
+
+            pstmt.setString(1, user);
+            pstmt.setInt(2, movieId);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            if(rs.next()){
+
+                return rs.getString(1);
+            }
+
+        }catch(SQLException e){
+
+            System.out.println("GET COMMENT ERROR: " + e.getMessage());
+        }
+
+        return " ";
+    }
+
+    
 }
 
