@@ -18,6 +18,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
+
+import java.util.ArrayList;
+
 import org.controlsfx.control.Rating;
 
 public class CommentsPage {
@@ -72,32 +75,57 @@ public class CommentsPage {
         }
     }
 
-    //existing comments
+    //old comments
     private void loadComments() {
         commentsContainer.getChildren().clear();
-        //examples
-        addCommentCard("bensu", null, 1.0, "That *** film made me cry all day");
-        addCommentCard("mina",  null, 4.5, "I love the acting and the storytelling. It is just a bit long.");
+
+        ArrayList<String> commenters = DatabaseHandler.getCommentedUsersList(currentMovie.getId());
+
+        for (int i = 0; i < commenters.size(); i++) {
+            String commenterUsername = commenters.get(i);
+
+            Integer rate = DatabaseHandler.getRate(commenterUsername, currentMovie.getId());
+            String commentText = DatabaseHandler.getComment(commenterUsername, currentMovie.getId());
+
+            String ppURL = DatabaseHandler.userStringGetter("profilepic", "username", commenterUsername);
+            if (ppURL != null && ppURL.equals("userstringnotfound")) {
+                ppURL = null; 
+            }
+
+            addCommentCard(commenterUsername, ppURL, rate, commentText);
+        }
     }
 
     //add comment button
     private void handleAddComment() {
         String text = commentArea.getText().trim();
         if (text.isEmpty()) return;
+        int rating = (int) starRating.getRating();
 
-        double rating = starRating.getRating();
-        String username = (currentUser != null) ? currentUser.getUsername() : "me";
-        String photoPath = (currentUser != null) ? currentUser.getProfilePhoto().getUrl() : null;
+        String username;
+        String photoPath;
+        if (currentUser != null) {
+            username = currentUser.getUsername();
+            photoPath = currentUser.getProfilePhoto().getUrl();
+        } else {
+            username = "guest";
+            photoPath = ProfilePhoto.DEFAULT.getUrl();
+        }
 
-        commentsContainer.getChildren().add(0, buildCommentCard(username, photoPath, rating, text));
-        commentArea.clear();
-        starRating.setRating(0);
+        boolean success = DatabaseHandler.newComment(username, text, rating, currentMovie.getId());
+        if (success) {
+            commentsContainer.getChildren().add(0, buildCommentCard(username, photoPath, rating, text));
+            
+            commentArea.clear();
+            starRating.setRating(0);
+        } 
     }
 
     // adds a comment card to the commend container
     private void addCommentCard(String username, String photoPath, double ratingValue, String commentText) {
         commentsContainer.getChildren().add(buildCommentCard(username, photoPath, ratingValue, commentText));
     }
+
 
     // returns comment card that has avatar, username, rating and comment
     private HBox buildCommentCard(String username, String photoPath, double ratingValue, String commentText) {
@@ -119,20 +147,13 @@ public class CommentsPage {
 
         //username
         Label nameLabel = new Label(username);
-        nameLabel.setStyle(
-                "-fx-text-fill: white;" +
-                "-fx-font-size: 15px;" +
-                "-fx-font-weight: bold;");
+        nameLabel.setStyle( "-fx-text-fill: white;" + "-fx-font-size: 15px;" + "-fx-font-weight: bold;");
 
         //star ratings
         Rating ratingDisplay = new Rating();
         ratingDisplay.setRating(ratingValue);
         ratingDisplay.setDisable(true);
-        ratingDisplay.setStyle(
-                "-fx-opacity: 1;" +
-                "-fx-background-color: #f5f0d8;" +
-                "-fx-background-radius: 6;" +
-                "-fx-padding: 2 8 2 8;");
+        ratingDisplay.setStyle("-fx-opacity: 1;" +"-fx-background-color: #f5f0d8;" +"-fx-background-radius: 6;" +"-fx-padding: 2 8 2 8;");
         ratingDisplay.setPrefHeight(28);
         VBox.setMargin(ratingDisplay, new Insets(4, 0, 6, 0));
 
@@ -144,10 +165,7 @@ public class CommentsPage {
 
         VBox commentBox = new VBox(commentLabel);
         commentBox.setStyle(
-                "-fx-background-color: #0c111b;" +
-                "-fx-border-color: #2a3a5c;" +
-                "-fx-border-radius: 10;" +
-                "-fx-background-radius: 10;");
+                "-fx-background-color: #0c111b;" +"-fx-border-color: #2a3a5c;" +"-fx-border-radius: 10;" + "-fx-background-radius: 10;");
         commentBox.setPadding(new Insets(12, 16, 28, 16));
         commentBox.setMaxWidth(720);
 
