@@ -1189,6 +1189,53 @@ public class DatabaseHandler {
         }
     }
 
+    //get isChat private ethod
+    public static boolean isChatPrivate(Integer movieId){
+
+        String sql = "SELECT isprivate FROM chats WHERE id = ?";
+
+        try(Connection conn = connect();
+        PreparedStatement pstmt = conn.prepareStatement(sql)){
+
+            pstmt.setInt(1, movieId);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            if(rs.next()){
+
+                return rs.getBoolean(1);
+            }
+        }catch(SQLException e){
+
+            System.out.println("GET IS CHAT PRIVATE ERROR: " + e.getMessage());
+        }
+
+        return true;
+    }
+
+    //is Admin setter
+    public static boolean setAdmin(Integer movieId, Boolean isAdmin, String user){
+
+        String sql = "UPDATE " + movieId + "susers SET isadmin = ? WHERE username = ?";
+
+        try(Connection conn = connect();
+        PreparedStatement pstmt = conn.prepareStatement(sql)){
+
+            pstmt.setBoolean(1, isAdmin);
+            pstmt.setString(2, user);
+            pstmt.executeUpdate();
+
+            System.out.println("SET ADMIN SUCCESSFULL");
+
+
+            return true;
+        }catch(SQLException e){
+            System.out.println("SET ADMIN ERROR: " + e.getMessage());
+        }
+
+        return false;
+    }
+
     //Chat name getter
     public static String getChatName(Integer movieId){
 
@@ -1673,7 +1720,7 @@ public class DatabaseHandler {
     //This methıd returns the isadmin boolean arrayList of a chat
     public static ArrayList<Boolean> getIsAdmin(Integer chatId){
 
-        String sql = "SELECT idadmin FROM " + chatId + "susers";
+        String sql = "SELECT isadmin FROM " + chatId + "susers";
         ArrayList<Boolean> list = new ArrayList<Boolean>();
 
         try(Connection conn = connect();
