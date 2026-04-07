@@ -18,7 +18,7 @@ import java.util.ArrayList;
 public class DatabaseHandler {
 
     //These are the information of our database to set the database url
-    
+ 
 
     //Combining the information above to form the database url
     private static final String DB_URL = "jdbc:mysql://" + HOST + ":" + PORT + "/" + DB_NAME + "?useSSL=true";
@@ -199,6 +199,60 @@ public class DatabaseHandler {
         return false;
     }
 
+    //This method is used to delete user
+    public static boolean deleteUser(String username){
+
+        String sqlone = "DELETE FROM users WHERE username = ?";
+
+        try(Connection conn = connect();
+        PreparedStatement pstmt = conn.prepareStatement(sqlone)){
+
+            pstmt.setString(1, username);
+            pstmt.executeUpdate();
+
+            deleteFavorites(username);
+            deleteRecentWatches(username);
+            deleteRecomendedByFriends(username);
+
+            ArrayList<String> collectionList = new ArrayList<String>();
+            collectionList = getCollections(username);
+
+            for(String a: collectionList){
+                deleteCollection(a, username);
+            }
+
+            ArrayList<Integer> chatIdList = new ArrayList<Integer>();
+            chatIdList = getChats(username);
+            
+            for(Integer b : chatIdList){
+                deleteChat(b);
+            }
+
+            String sqltwo = "DROP TABLE IF EXISTS " + username + "schats";
+            try(Statement stmt = conn.createStatement()){
+                stmt.executeUpdate(sqltwo);
+            } 
+
+            String sql = "DELETE FROM followingstable WHERE user = ? OR following = ?";
+            try(PreparedStatement pstmttwo = conn.prepareStatement(sql)){
+
+                pstmttwo.setString(1, username);
+                pstmttwo.setString(2, username);
+
+                pstmttwo.executeUpdate();
+            }
+
+            System.out.println("DELETED USER SUCCESSFULLY");
+            return true;
+
+        }catch(SQLException e){
+
+            System.out.println("DELETE USER ERROR: " + e.getMessage());
+        }
+
+        return false;
+    }
+
     //User info getter method.This getter method is only for strings. 
     //This method gets 3 parameters. the first parameter will me the information
     //that you want to get. the key names are username,email,userbio,password,profilepic.
@@ -209,7 +263,7 @@ public class DatabaseHandler {
     public static String userStringGetter(String keyGet, String keyGive, String valueGive){
         
         //Writing the sql command string
-        String sql = "SELECT " + keyGet + "FROM users WHERE " + keyGive + " = ?";
+        String sql = "SELECT " + keyGet + " FROM users WHERE " + keyGive + " = ?";
         
         //Setting the try catch block
         try( Connection conn = connect();
@@ -242,17 +296,17 @@ public class DatabaseHandler {
     //the second parameter will be the type of the info you know about the user. It will be either
     //the username or email. The third parameter will be the string containing the value of username
     //,email.
-    public static Integer userIntegerGetter(String keyGet, String keyGive, Integer valueGive){
+    public static Integer userIntegerGetter(String keyGet, String keyGive, String valueGive){
         
         //Writing the sql command string
-        String sql = "SELECT " + keyGet + "FROM users WHERE " + keyGive + " = ?";
+        String sql = "SELECT " + keyGet + " FROM users WHERE " + keyGive + " = ?";
         
         //Setting the try catch block
         try( Connection conn = connect();
             PreparedStatement pstmt = conn.prepareStatement(sql)){
 
             //Setting the value we got to find the user
-            pstmt.setInt(1, valueGive);
+            pstmt.setString(1, valueGive);
 
             //Setting the result set
             ResultSet rs = pstmt.executeQuery();
@@ -413,6 +467,14 @@ public class DatabaseHandler {
 
             pstmt.executeUpdate();
 
+            ArrayList<String> userlist = new ArrayList<String>();
+            userlist.add(user);
+            userlist.add(following);
+            ArrayList<Boolean> adminList = new ArrayList<Boolean>();
+            adminList.add(true);
+            adminList.add(true);
+            createNewChat(following, userlist, adminList, true);
+
             
             System.out.println("STARTED FOLLOWING! ");
             return true;
@@ -487,6 +549,114 @@ public class DatabaseHandler {
 
         }catch(SQLException e){
             System.out.println("GET COLLECTION ERROR: " + e.getMessage());
+        }
+
+        return list;
+    }
+
+    //This list returns the movie IDs in a collection
+    public static ArrayList<Integer> getMoviesFromCollection(String collectionName, String user){
+
+        String sql = "SELECT movieid FROM " + user + "s" + collectionName;
+        ArrayList<Integer> list = new ArrayList<Integer>();
+
+        try(Connection conn = connect();
+        Statement stmt = conn.createStatement()){
+
+            ResultSet rs = stmt.executeQuery(sql);
+
+            while(rs.next()){
+
+                list.add(rs.getInt(1));
+
+            }
+
+            System.out.println("GET ALL MOVIES FROM COLLECTION SUCCESSFULL");
+
+        }catch(SQLException e){
+
+            System.out.println("GET ALL MOVIES FROM COLLECTION ERROR: " + e.getMessage());
+        }
+
+        return list;
+    }
+
+    //This list returns the movie IDs in favorites
+    public static ArrayList<Integer> getMoviesFromFavorites(String user){
+
+        String sql = "SELECT movieid FROM " + user + "sfavorites";
+        ArrayList<Integer> list = new ArrayList<Integer>();
+
+        try(Connection conn = connect();
+        Statement stmt = conn.createStatement()){
+
+            ResultSet rs = stmt.executeQuery(sql);
+
+            while(rs.next()){
+
+                list.add(rs.getInt(1));
+
+            }
+
+            System.out.println("GET ALL MOVIES FROM FAVORITES SUCCESSFULL");
+
+        }catch(SQLException e){
+
+            System.out.println("GET ALL MOVIES FROM FAVORITES ERROR: " + e.getMessage());
+        }
+
+        return list;
+    }
+
+    //This list returns the movie IDs in recent watches
+    public static ArrayList<Integer> getMoviesFromRecentWatches(String user){
+
+        String sql = "SELECT movieid FROM " + user + "srecentwatches";
+        ArrayList<Integer> list = new ArrayList<Integer>();
+
+        try(Connection conn = connect();
+        Statement stmt = conn.createStatement()){
+
+            ResultSet rs = stmt.executeQuery(sql);
+
+            while(rs.next()){
+
+                list.add(rs.getInt(1));
+
+            }
+
+            System.out.println("GET ALL MOVIES FROM RECENT WATCHES SUCCESSFULL");
+
+        }catch(SQLException e){
+
+            System.out.println("GET ALL MOVIES FROM RECENT WATCHES ERROR: " + e.getMessage());
+        }
+
+        return list;
+    }
+
+    //This list returns the movie IDs in recomendedby friends
+    public static ArrayList<Integer> getMoviesFromRecomendedByFriends(String user){
+
+        String sql = "SELECT movieid FROM " + user + "srecomendedbyfriends";
+        ArrayList<Integer> list = new ArrayList<Integer>();
+
+        try(Connection conn = connect();
+        Statement stmt = conn.createStatement()){
+
+            ResultSet rs = stmt.executeQuery(sql);
+
+            while(rs.next()){
+
+                list.add(rs.getInt(1));
+
+            }
+
+            System.out.println("GET ALL MOVIES FROM RECOMENDED BY FRIENDS SUCCESSFULL");
+
+        }catch(SQLException e){
+
+            System.out.println("GET ALL MOVIES FROM RECOMENDED BY FRIENDS ERROR: " + e.getMessage());
         }
 
         return list;
@@ -603,6 +773,81 @@ public class DatabaseHandler {
             System.out.println("CREATING RECOMENDED BY FRIENDS WATCHES ERROR: " + e.getMessage());
         }
 
+    }
+
+    //This method returns the username of the friend that recomended the movie in users recomended by friend list
+    public static String whoRecomended(String user, Integer movieID){
+
+        String sql = "SELECT friend FROM " + user + "srecomendedbyfriends WHERE movieid = ?";
+
+        try(Connection conn = connect();
+        PreparedStatement pstmt = conn.prepareStatement(sql)){
+
+            pstmt.setInt(1, movieID);
+            ResultSet rs = pstmt.executeQuery();
+
+            if(rs.next()){
+
+                System.out.println("GOT FRIEND THAT RECOMENDED SUCCESSFULLY");
+                return rs.getString(1);
+            }
+
+            System.out.println("COULD NOT FIND THE MOVIE");
+
+        }catch(SQLException e){
+            
+            System.out.println("GET WHO RECOMENDED ERROR: " + e.getMessage());
+    
+        }
+
+        return " ";
+    }
+
+    //This method is only used while deleting a user account 
+    private static void deleteFavorites(String username){
+
+        String sql = "DROP TABLE IF EXISTS " + username + "sfavorites";
+
+        try( Connection conn = connect();
+        Statement stmt  = conn.createStatement()){
+
+            stmt.executeUpdate(sql);
+            System.out.println("DELETING FAVORITES SUCCESSFULL");
+
+        }catch(SQLException e){
+
+            System.out.println("DELETIONG FAVORITES TABLE ERROR: " + e.getMessage());
+        }
+    }
+
+    private static void deleteRecentWatches(String username){
+
+        String sql = "DROP TABLE IF EXISTS " + username + "srecentwatches";
+
+        try(Connection conn= connect();
+        Statement stmt = conn.createStatement()){
+
+            stmt.executeUpdate(sql);
+            System.out.println("DELETED RECENT WATCHES SUCCESSFULLY");
+
+        }catch( SQLException e){
+            System.out.println("DELETING RECENT WATCHES TABLE ERROR: " + e.getMessage());
+        }
+    }
+
+    private static void deleteRecomendedByFriends(String username){
+
+        String sql = "DROP TABLE IF EXISTS " + username + "srecomendedbyfriends";
+
+        try(Connection conn = connect();
+        Statement stmt = conn.createStatement()){
+
+            stmt.executeUpdate(sql);
+            System.out.println("RECOMENDED BY FRIENDS DELETED SUCCESSFULLY");
+
+        }catch(SQLException e){
+            System.out.println("DELETRING RECOMENDED BY FRIENDS TABLE ERROR: " + e.getMessage());
+        }
     }
 
     //Collection Setter methods
@@ -745,10 +990,12 @@ public class DatabaseHandler {
     public static boolean addUserToChat(Integer chatID, String user, Boolean isAdmin){
         String sql = "INSERT INTO " + chatID + "susers (username,isadmin) VALUES (?,?)";
         String sqlTwo= "INSERT INTO " + user + "schats (chatid) VALUES (?)";
+        String sqlthree = "UPDATE chats SET membercount = ? WHERE id = ?";
 
         try(Connection conn = connect();
         PreparedStatement pstmt = conn.prepareStatement(sql);
-        PreparedStatement pstmttwo = conn.prepareStatement(sqlTwo)){
+        PreparedStatement pstmttwo = conn.prepareStatement(sqlTwo);
+        PreparedStatement pstmtthree = conn.prepareStatement(sqlthree)){
 
             pstmt.setString(1, user);
             pstmt.setBoolean(2, isAdmin);
@@ -757,6 +1004,12 @@ public class DatabaseHandler {
 
             pstmt.executeUpdate();
             pstmttwo.executeUpdate();
+
+            int x = getMemeberCount(chatID) + 1;
+
+            pstmtthree.setInt(1, x);
+            pstmtthree.setInt(2, chatID);
+            pstmtthree.executeUpdate();
 
             System.out.println("ADDED USER TO CHAT SUCCESSFULLY");
 
@@ -843,10 +1096,12 @@ public class DatabaseHandler {
 
         String sql = "DELETE FROM " + chatId + "susers WHERE username = ?";
         String sqltwo = "DELETE FROM " + username + "schats WHERE chatid = ?";
+        String sqlthree = "UPDATE chats SET membercount = ? WHERE id = ?";
 
         try(Connection conn = connect();
         PreparedStatement pstmt = conn.prepareStatement(sql);
-        PreparedStatement pstmttwo = conn.prepareStatement(sqltwo)){
+        PreparedStatement pstmttwo = conn.prepareStatement(sqltwo);
+        PreparedStatement pstmtthree = conn.prepareStatement(sqlthree)){
 
             pstmt.setString(1, username);
 
@@ -854,6 +1109,12 @@ public class DatabaseHandler {
 
             pstmttwo.setInt(1, chatId);
             pstmttwo.executeUpdate();
+
+            int x = getMemeberCount(chatId) - 1;
+
+            pstmtthree.setInt(1, x);
+            pstmtthree.setInt(2, chatId);
+            pstmtthree.executeUpdate();
 
             System.out.println("REMOVED USER FROM CHAT SUCCESSFULLY");
 
@@ -1006,6 +1267,31 @@ public class DatabaseHandler {
         return -1;
     }
 
+    //getallchatIds of a user method
+    public static ArrayList<Integer> getChats(String username){
+
+        String sql  = "SELECT chatid FROM " + username + "schats";
+        ArrayList<Integer> list = new ArrayList<Integer>();
+
+        try(Connection conn = connect();
+        Statement stmt = conn.createStatement()){
+
+            ResultSet rs = stmt.executeQuery(sql);
+
+            while(rs.next()){
+
+                list.add(rs.getInt(1));
+            }
+
+            System.out.println("GET CHATS SUCCESSFULL");
+
+        }catch(SQLException e){
+
+            System.out.println("GET CHATS ERROR: " + e.getMessage());
+        }
+        return list;
+    }
+
     //is user in this chat method. returns boolean. this method will be used to check if the user already
     //exists in a chat to prevent them to joın the same group twice at search chats
     public static boolean isUserInThisChat(Integer chatId, String username){
@@ -1032,6 +1318,56 @@ public class DatabaseHandler {
         }
 
         return false;
+    }
+
+    //This method returns an string arrayli,st that contains the list of the users existing in the chat
+    public static ArrayList<String> getUserList(Integer chatId){
+
+        String sql = "SELECT username FROM " + chatId + "susers";
+        ArrayList<String> list = new ArrayList<String>();
+
+        try(Connection conn = connect();
+        Statement stmt  = conn.createStatement()){
+
+            ResultSet rs = stmt.executeQuery(sql);
+
+            while(rs.next()){
+
+                list.add(rs.getString(1));
+            }
+
+            System.out.println("GET USERS OF CHAT SUCCESSFULL");
+
+        }catch(SQLException e){
+            System.out.println("GET USERS OF CHAT ERROR: " + e.getMessage());
+        }
+
+        return list;
+    }
+
+    //This methıd returns the isadmin boolean arrayList of a chat
+    public static ArrayList<Boolean> getIsAdmin(Integer chatId){
+
+        String sql = "SELECT idadmin FROM " + chatId + "susers";
+        ArrayList<Boolean> list = new ArrayList<Boolean>();
+
+        try(Connection conn = connect();
+        Statement stmt  = conn.createStatement()){
+
+            ResultSet rs = stmt.executeQuery(sql);
+
+            while(rs.next()){
+                list.add(rs.getBoolean(1));
+            }
+
+            System.out.println("GET IS ADMIN OF CHAT SUCCESSFULL");
+
+        }catch(SQLException e){
+
+            System.out.println("GET IS ADMIN OF CHAT ERROR: " + e.getMessage());
+        }
+
+        return list;
     }
 }
 
