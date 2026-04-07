@@ -6,7 +6,6 @@ import java.util.List;
 public class User {
     
     private String username;
-    private long userID;
     private String email;
     private String bio;
     private ProfilePhoto profilePhoto; //url
@@ -25,10 +24,9 @@ public class User {
     //assuming chats will be pulled by its id
     private List<Long> chats;
 
-    public User(String aUserName, String anEmail, long userID) {
+    public User(String aUserName, String anEmail) {
         this.username = aUserName;
         this.email = anEmail;
-        this.userID = userID;
         this.profilePhoto = ProfilePhoto.DEFAULT; //default profile photo
         this.bio = ""; //the default bio
         this.favorites = new ArrayList<>();
