@@ -74,12 +74,12 @@ public class SignIn{
 
                     MainPage mainPage = new MainPage();
                     try {
-                        Scene nextScene = mainPage.createMainPageScene(primaryStage);
-                        StartingPage.changeScene(nextScene);
-
                         App.currentUser = new User(name, mail);
                         App.currentUser.setProfilePhoto(ProfilePhoto.DEFAULT);
+
+                        Scene nextScene = mainPage.createMainPageScene(primaryStage);
                         mainPage.setData(App.currentUser, null);
+
                         StartingPage.changeScene(nextScene);
 
                         
