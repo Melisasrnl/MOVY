@@ -52,10 +52,7 @@ public class MemberSelectionGroupChat {
         VBox searchResult = new VBox();
 
         String username = searchField.getText();
-        // String findingUser = DatabaseHandler.userStringGetter("username", "username",
-        // username);
 
-        // searching logis should be implemented
         AnchorPane.setTopAnchor(searchField, 100.0);
         AnchorPane.setLeftAnchor(searchField, 10.0);
         AnchorPane.setRightAnchor(searchField, 10.0);
