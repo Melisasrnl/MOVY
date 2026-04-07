@@ -1565,10 +1565,10 @@ public class DatabaseHandler {
     }
 
     //get all chats method
-    public static ArrayList<String> getAllChats(){
+    public static ArrayList<Integer> getAllChats(){
 
         String sql = "SELECT id FROM chats";
-        ArrayList<String> list = new ArrayList<String>();
+        ArrayList<Integer> list = new ArrayList<Integer>();
 
         try(Connection conn = connect();
         Statement stmt = conn.createStatement()){
@@ -1576,7 +1576,7 @@ public class DatabaseHandler {
             ResultSet rs = stmt.executeQuery(sql);
 
             while(rs.next()){
-                list.add(rs.getString(1));
+                list.add(rs.getInt(1));
             }
         }catch(SQLException e){
 
