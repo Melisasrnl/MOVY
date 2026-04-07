@@ -115,8 +115,10 @@ public class ProfilePage {
         Label favorites = new Label("Favorites");
         favorites.setStyle("-fx-text-fill: #EAEAEA");
         Button seeAllFavs = new Button("See All");
-        //the new scene will be added
         seeAllFavs.setStyle("-fx-background-color: #0B0F1A; -fx-text-fill: #EAEAEA");
+        seeAllFavs.setOnAction(e -> {
+            stage.setScene(new Favorites().showFavorites(stage));
+        });
 
         Region spacerFav = new Region();
         HBox.setHgrow(spacerFav, Priority.ALWAYS);
@@ -128,6 +130,9 @@ public class ProfilePage {
         recentWatches.setStyle("-fx-text-fill: #EAEAEA;");
         Button seeAllRWs = new Button("See All");
         seeAllRWs.setStyle("-fx-background-color: #0B0F1A; -fx-text-fill: #EAEAEA");
+        seeAllRWs.setOnAction(e -> {
+            stage.setScene(new RecentWatches().showRecentWatches(stage));
+        });
         Region spacerRWs = new Region();
         HBox.setHgrow(spacerRWs, Priority.ALWAYS);
         HBox RWsLine = new HBox(10, recentWatches,  spacerRWs,seeAllRWs);
@@ -152,6 +157,9 @@ public class ProfilePage {
         watchList.setStyle("-fx-text-fill: #EAEAEA; -fx-font-weight: bold;");
         Button seeAllWL = new Button("See All");
         seeAllWL.setStyle("-fx-background-color: #1f1f21;; -fx-text-fill: #EAEAEA");
+        seeAllWL.setOnAction(e -> {
+            stage.setScene(new WatchList().showWL(stage));
+        });
         Region spacerWL = new Region();
         HBox.setHgrow(spacerWL, Priority.ALWAYS);
         HBox WLLine = new HBox(10,  spacerWL,watchList, seeAllWL);
@@ -162,6 +170,9 @@ public class ProfilePage {
         recombyFriends.setStyle("-fx-text-fill: #EAEAEA; -fx-font-weight: bold;");
         Button seeAllRBF = new Button("See All");
         seeAllRBF.setStyle("-fx-background-color: #1f1f21;; -fx-text-fill: #EAEAEA");
+        seeAllRBF.setOnAction(e -> {
+            stage.setScene(new RecomByFriends().showRBF(stage));
+        });
         Region spacerRBF = new Region();
         HBox.setHgrow(spacerRBF, Priority.ALWAYS);
         HBox RBFLine = new HBox(10, spacerRBF,recombyFriends, seeAllRBF);
