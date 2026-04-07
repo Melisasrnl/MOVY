@@ -755,6 +755,56 @@ public class DatabaseHandler {
         return false;
     }
 
+    //isInRecentwatches method return boolean. checks if the movie is in recent watches
+    public static boolean isInRecentWatches(String user, Integer movieId){
+
+        String sql = "SELECT COUNT(*) FROM " + user + "srecentwatches WHERE movieid = ?";
+
+        try(Connection conn = connect();
+        PreparedStatement pstmt = conn.prepareStatement(sql)){
+
+            pstmt.setInt(1, movieId);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            if(rs.next()){
+
+                return (rs.getInt(1) > 0);
+            }
+
+        }catch(SQLException e){
+
+            System.out.println("IS IN RECENT WATCHES ERROR: " + e.getMessage());
+        }
+
+        return false;
+    }
+
+    //is in favorites return boolean. checks if the movie is in favorites or not
+    public static boolean isInFavorites(String user, Integer movieId){
+
+        String sql = "SELECT COUNT(*) FROM " + user + "sfavorites WHERE movieid = ?";
+
+        try(Connection conn = connect();
+        PreparedStatement pstmt = conn.prepareStatement(sql)){
+
+            pstmt.setInt(1, movieId);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            if(rs.next()){
+
+                return (rs.getInt(1) > 0);
+            }
+
+        }catch(SQLException e){
+
+            System.out.println("IS IN FAVORITES ERROR: " + e.getMessage());
+        }
+
+        return false;
+    }
+
     //Deleting a movie from the favorites
     public static boolean deleteMovieFromFavorites (String user,Integer movieId){
 
@@ -1137,6 +1187,80 @@ public class DatabaseHandler {
         }catch(SQLException e){
             System.out.println("CREATING ALL CHATS TABLE: " + e.getMessage());
         }
+    }
+
+    //Chat name getter
+    public static String getChatName(Integer movieId){
+
+        String sql = "SELECT chatname FROM chats WHERE id = ?";
+
+        try(Connection conn = connect();
+        PreparedStatement pstmt = conn.prepareStatement(sql)){
+
+            pstmt.setInt(1, movieId);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            if(rs.next()){
+
+                return rs.getString(1);
+            }
+
+        }catch(SQLException e){
+
+            System.out.println("GET CHAT NAME ERROR: " + e.getMessage());
+        }
+
+        return "Chat name not found";
+    }
+
+    //get chat photo
+    public static String getChatPhoto(Integer movieId){
+
+        String sql = "SELECT chatphotourl FROM chats WHERE id = ?";
+
+        try(Connection conn = connect();
+        PreparedStatement pstmt = conn.prepareStatement(sql)){
+
+            pstmt.setInt(1,movieId);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            if(rs.next()){
+
+                return rs.getString(1);
+
+            }
+        }catch(SQLException e){
+
+            System.out.println("GET CHAT PHOTO ERROR: " + e.getMessage());
+        }
+
+        return " ";
+    }
+
+    //get about chat
+    public static String getAboutChat(Integer movieId){
+
+        String sql = "SELECT aboutchat FROM chats WHERE id = ?";
+
+        try(Connection conn = connect();
+        PreparedStatement pstmt = conn.prepareStatement(sql)){
+
+            pstmt.setInt(1, movieId);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            if(rs.next()){
+
+                return rs.getString(1);
+            }
+        }catch(SQLException e){
+
+            System.out.println("GET ABOUT CHAT ERROR: " + e.getMessage());
+        }
+
+        return " ";
     }
 
     //Create new chat. dont forget to get users ArrayList. the admin booleans are also kept as arraylists where the indexes match with the members lists indexes.
