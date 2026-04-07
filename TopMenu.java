@@ -33,29 +33,25 @@ public class TopMenu {
         topMenu.setPadding(new Insets(5));
         topMenu.setAlignment(Pos.CENTER_LEFT);
 
-        // a circle is used temporarily instead of a profile picture, the radius might
-        // be modified
-        Circle userPPCircle = new Circle(18, Color.DODGERBLUE);
-        userPPCircle.setStroke(Color.BLACK);
+        ProfilePhoto userPP = Main.currentUser.getProfilePhoto();
+        Circle userPPCircle = userPP.ProfilePhoto().createCircle(18);
 
-        // username will be modified
-        Button userButton = new Button("ceren");
+        Button userButton = new Button(Main.currentUser.getUsername());
         userButton.setStyle("-fx-background-color: #0B0F1A; -fx-text-fill: white;");
         userButton.setPrefSize(83, 40);
         userButton.setMaxWidth(Double.MAX_VALUE);
         userButton.setPadding(new Insets(0, 10, 0, 0));
         userButton.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
+                stage.setScene(new ProfilePage().createProfilePageScene(stage));
             }
         });
-        // button name may be changed
         Button homeButton = new Button("H");
         homeButton.setStyle("-fx-background-color: #0B0F1A; -fx-text-fill: white;");
         homeButton.setPrefSize(26, 40);
         homeButton.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                // new scene will be added
-                System.out.println("home is working");
+                stage.setScene(new MainPage().createMainPageScene(stage));
             }
         });
 
@@ -64,20 +60,15 @@ public class TopMenu {
         searchFriendsButton.setPrefSize(116, 40);
         searchFriendsButton.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent event) {
-                // new scene will be added
                 stage.setScene(new SearchFriends().choose(stage));
-                System.out.println("search friends is working");
             }
         });
-        // the button might be renamed
         Button searchButton = new Button("Search");
         searchButton.setStyle("-fx-background-color: #0B0F1A; -fx-text-fill: white;");
         searchButton.setPrefSize(66, 40);
         searchButton.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent event) {
-                // new scene will be added
                stage.setScene(new SearchEngine().choose(stage));
-                System.out.println("searching is working");
             }
         });
 
@@ -93,14 +84,12 @@ public class TopMenu {
         searchChats.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent event) {
                 stage.setScene(new SearchChats().createSearchChatsScene(stage));
-                System.out.println("searching chats is working");
             }
         });
 
         myChats.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent event) {
                 stage.setScene(new MyChats().createMyChatsScene(stage));
-                System.out.println("mychats button is working");
             }
         });
 
@@ -111,7 +100,6 @@ public class TopMenu {
         recommendButton.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent event) {
                 stage.setScene(new TestPage().choose(stage));
-                System.out.println("recommend me is working");
             }
         });
         topMenu.getChildren().addAll(userPPCircle, userButton, homeButton, searchFriendsButton, searchButton,
