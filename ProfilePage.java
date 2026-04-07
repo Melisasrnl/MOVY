@@ -57,7 +57,7 @@ public class ProfilePage {
         Label bio = new Label(Main.currentUser.getBio());
         bio.setStyle("-fx-text-fill: #EAEAEA");
         VBox userInfo = new VBox(5, username, bio, edit);
-        Button followers = new Button(Main.currentUser.getFollowers() + "Followers");
+        Button followers = new Button(Main.currentUser.getFollowersCount() + "Followers");
         followers.setStyle("-fx-background-color: #0B0F1A; -fx-text-fill: #EAEAEA");
 
         followers.setOnAction(new EventHandler<ActionEvent>() {
@@ -66,7 +66,7 @@ public class ProfilePage {
 
             }
         });
-        Button followings = new Button(Main.currentUser.getFollowing() + "Following");
+        Button followings = new Button(Main.currentUser.getFollowingCount() + "Following");
         followings.setStyle("-fx-background-color: #0B0F1A; -fx-text-fill: #EAEAEA");
 
         followers.setOnAction(new EventHandler<ActionEvent>() {
