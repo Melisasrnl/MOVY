@@ -163,3 +163,5 @@ public class SearchChats {
         return new Scene(root);
     }
 }
+}
+    
