@@ -62,6 +62,7 @@ public class CommentsPage {
                 try {
                     Stage currentStage = (Stage) backBtn.getScene().getWindow();
                     MoviePage moviePage = new MoviePage();
+                    moviePage.setData(currentUser, currentMovie);
                     
                     Scene movieScene = moviePage.createAboutMovieScene(currentStage);
                     currentStage.setScene(movieScene);
