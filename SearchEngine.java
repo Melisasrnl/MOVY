@@ -85,7 +85,7 @@ public class SearchEngine {
             ArrayList<String> movieGenres = TmdbService.getMovieGenres(id);
             
             // Filter by genre if not "All"
-            if (!genre.equals("All") && !movieGenres.contains(genre)) {
+            if (genre != null && !genre.equals("All") && !movieGenres.contains(genre)) {
                 continue;
             }
 
