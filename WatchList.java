@@ -27,7 +27,7 @@ public class WatchList {
     private ArrayList<String> movies = new ArrayList<>();
 
     //ui for the favorites
-    public Scene showRecentWatches(Stage stage){
+    public Scene showWL(Stage stage){
         HBox topMenu = new TopMenu().createTopMenu(stage);
         StackPane root = new StackPane();
         root.setStyle("-fx-background-color: #b2b1ae;");
