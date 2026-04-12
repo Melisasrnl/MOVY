@@ -19,9 +19,9 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class ProfilePage {
-    private CollectionPage cp = new CollectionPage();
 
     public  Scene createProfilePageScene(Stage stage) {
+        CollectionPage cp = new CollectionPage(App.currentUser.getUsername());
         AnchorPane root = new AnchorPane();
         root.setStyle("-fx-background-color: #0B0F1A;");
         HBox topMenu = new TopMenu().createTopMenu(stage);
@@ -42,8 +42,8 @@ public class ProfilePage {
         Button returnToHomePage = new Button("<");
         returnToHomePage.setStyle("-fx-text-fill: #EAEAEA;");
 
-        ProfilePhoto userPP = Main.currentUser.getProfilePhoto();
-        Circle userPPCircle = userPP.ProfilePhoto().createCircle(27);
+        ProfilePhoto userPP = App.currentUser.getProfilePhoto();
+        Circle userPPCircle = userPP.createCircle(27);
         
         Button edit = new Button("Edit");
         edit.setStyle("-fx-background-color: #0B0F1A; -fx-text-fill: #EAEAEA");
@@ -52,12 +52,12 @@ public class ProfilePage {
                 stage.setScene(new EditProfile().createEditProfileScene(stage));
             }
         });
-        Label username = new Label(Main.currentUser.getUsername());
+        Label username = new Label(App.currentUser.getUsername());
         username.setStyle("-fx-text-fill: #EAEAEA");
-        Label bio = new Label(Main.currentUser.getBio());
+        Label bio = new Label(App.currentUser.getBio());
         bio.setStyle("-fx-text-fill: #EAEAEA");
         VBox userInfo = new VBox(5, username, bio, edit);
-        Button followers = new Button(Main.currentUser.getFollowersCount() + "Followers");
+        Button followers = new Button(App.currentUser.getFollowersCount() + "Followers");
         followers.setStyle("-fx-background-color: #0B0F1A; -fx-text-fill: #EAEAEA");
 
         followers.setOnAction(new EventHandler<ActionEvent>() {
@@ -66,7 +66,7 @@ public class ProfilePage {
 
             }
         });
-        Button followings = new Button(Main.currentUser.getFollowingCount() + "Following");
+        Button followings = new Button(App.currentUser.getFollowingCount() + "Following");
         followings.setStyle("-fx-background-color: #0B0F1A; -fx-text-fill: #EAEAEA");
 
         followers.setOnAction(new EventHandler<ActionEvent>() {
@@ -117,7 +117,7 @@ public class ProfilePage {
         Button seeAllFavs = new Button("See All");
         seeAllFavs.setStyle("-fx-background-color: #0B0F1A; -fx-text-fill: #EAEAEA");
         seeAllFavs.setOnAction(e -> {
-            stage.setScene(new Favorites().showFavorites(stage));
+            stage.setScene(new Favorites(App.currentUser.getUsername()).showFavorites(stage));
         });
 
         Region spacerFav = new Region();
@@ -131,7 +131,7 @@ public class ProfilePage {
         Button seeAllRWs = new Button("See All");
         seeAllRWs.setStyle("-fx-background-color: #0B0F1A; -fx-text-fill: #EAEAEA");
         seeAllRWs.setOnAction(e -> {
-            stage.setScene(new RecentWatches().showRecentWatches(stage));
+            stage.setScene(new RecentWatches(App.currentUser.getUsername()).showRecentWatches(stage));
         });
         Region spacerRWs = new Region();
         HBox.setHgrow(spacerRWs, Priority.ALWAYS);
@@ -171,7 +171,7 @@ public class ProfilePage {
         Button seeAllRBF = new Button("See All");
         seeAllRBF.setStyle("-fx-background-color: #1f1f21;; -fx-text-fill: #EAEAEA");
         seeAllRBF.setOnAction(e -> {
-            stage.setScene(new RecomByFriends().showRBF(stage));
+            stage.setScene(new RecomByFriends(App.currentUser.getUsername()).showRBF(stage));
         });
         Region spacerRBF = new Region();
         HBox.setHgrow(spacerRBF, Priority.ALWAYS);
@@ -195,7 +195,7 @@ public class ProfilePage {
 
         Button addSC = new Button("+ Add New Collection");
         addSC.setOnAction(e -> { 
-            StackPane popup = new CreateCollection().createNewCol(stage, root, cp);
+            StackPane popup = new CreateCollection(App.currentUser.getUsername()).createNewCol(stage, root, cp);
             root.getChildren().add(popup);
         });
 
@@ -206,7 +206,7 @@ public class ProfilePage {
         top3collections.setSpacing(10);
         top3collections.setAlignment(Pos.CENTER);
         top3collections.getChildren().addAll(SCLine,addSC);
-        for(int i=0; i<3; i++){
+        for(int i=0; i<Math.min(3, cp.getCollections().size()); i++){
             Collection c = cp.getCollections().get(i);
             Button col = new Button(c.getName());
             col.setStyle("-fx-background-color: #1f1f21; -fx-text-fill: #EAEAEA");
