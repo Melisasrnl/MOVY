@@ -12,6 +12,8 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
@@ -20,20 +22,21 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class Collection {
 
     private  String name;
-    private  boolean isColPublic;
-    private  ArrayList<String> movies;
+    private String user;
+    private  boolean isColPrivate;
+    private  ArrayList<Integer> movieIDs;
 
-    public Collection(String name, boolean isPublic){
+    public Collection(String user, String name, boolean isPrivate){
+        this.user = user;
         this.name = name;
-        this.isColPublic = isPublic;
-        this.movies = new ArrayList<>();
+        this.isColPrivate = isPrivate;
+        this.movieIDs = DatabaseHandler.getMoviesFromCollection(this.getName(), this.getUser());
     }
 
     public Scene showCDP(Stage stage, CollectionPage cp){
@@ -91,8 +94,16 @@ public class Collection {
             buttons.setPadding(new Insets(10,70,10,70));
             Button submit = new Button("Submit");
             submit.setOnAction(ev -> {
-                //TODO
-                root.getChildren().remove(overlay);
+                boolean isPrivate = privateBtn.isSelected();
+                String newName = input.getText();
+                if (newName != null && !newName.isBlank()){
+                    DatabaseHandler.setCollectionIsPrivate(this.getName(), this.getUser(), isPrivate);
+                    DatabaseHandler.setCollectionName(this.getName(), this.getUser(), newName);
+                    this.setName(newName);
+                    this.isColPrivate = isPrivate;
+                    root.getChildren().remove(overlay);
+                    stage.setScene(showCDP(stage, cp));
+                }
             });
 
             Button cancelButton = new Button("Cancel");
@@ -121,23 +132,37 @@ public class Collection {
 
             Label prompt = new Label("Choose movie to remove:");
             prompt.setTextFill(Color.WHITE);      
-            
-            ChoiceBox <String> movieList = new ChoiceBox<>();
-            for(String s: this.movies){
-                movieList.getItems().add(s);
-            }
+
+            ChoiceBox<Integer> movieList = new ChoiceBox<>();
+            movieList.getItems().addAll(this.getMovieIDs());
+
+            movieList.setConverter(new javafx.util.StringConverter<Integer>() {
+                @Override
+                public String toString(Integer movieId) {
+                    return movieId == null ? "" : TmdbService.getMovieName(movieId);
+                }
+
+                @Override
+                public Integer fromString(String string) {
+                    return null;
+                }
+            });
+
             HBox buttons = new HBox();
             buttons.setAlignment(Pos.CENTER);
             buttons.setSpacing(10);
 
             Button removeButton = new Button("Remove");
             removeButton.setOnAction(ev -> {
-                String selected = movieList.getValue();
-                if (selected != null) {
-                    movies.remove(selected);
+                Integer selectedMovieId = movieList.getValue();
+                if (selectedMovieId != null) {
+                    boolean deleted = DatabaseHandler.deleteMovieFromCollection(this.getUser(),this.getName(),selectedMovieId);
+                    if (deleted) {
+                        movieIDs.remove(selectedMovieId);
+                        root.getChildren().remove(overlay);
+                        stage.setScene(showCDP(stage, cp));
+                    }
                 }
-                root.getChildren().remove(overlay);
-                stage.setScene(showCDP(stage, cp));
             });
 
             Button cancelButton = new Button("Cancel");
@@ -154,7 +179,7 @@ public class Collection {
 
         Button deleteButton = new Button("Delete Collection");
         deleteButton.setOnAction(e -> {
-            cp.removeCollection(this);
+            DatabaseHandler.deleteCollection(this.getName(), this.getUser());
             stage.setScene(cp.createCollectionsPage(stage));
         });
 
@@ -171,15 +196,18 @@ public class Collection {
         moviePane.setHgap(20);
         moviePane.setVgap(20);
 
-        for (String m : movies) {
+        for (Integer i: movieIDs) {
             VBox card = new VBox();
             card.setSpacing(5);
             card.setAlignment(Pos.CENTER);
 
-            Rectangle poster = new Rectangle(120, 160);
-            Label name = new Label(m);
+            String posterPath = TmdbService.getMoviePhotoUrl(i);
+            Image image = new Image(posterPath, 120, 160, true, true);
+            ImageView posterView = new ImageView(image);
 
-            card.getChildren().addAll(poster, name);
+            Label name = new Label(TmdbService.getMovieName(i));
+
+            card.getChildren().addAll(posterView, name);
             moviePane.getChildren().add(card);
         }
 
@@ -200,19 +228,19 @@ public class Collection {
         return name;
     }
 
-    public boolean isPublic(){
-        return isColPublic;
+    public void setName(String newName){
+        this.name = newName;
     }
 
-    public ArrayList<String> getMovies(){
-        return movies;
+    public String getUser(){
+        return user;
     }
 
-    public void addMovie(String movieName) {
-        movies.add(movieName);
+    public boolean isPrivate(){
+        return isColPrivate;
     }
 
-    public void removeMovie(String movieName) {
-        movies.remove(movieName);
+    public ArrayList<Integer> getMovieIDs(){
+        return movieIDs;
     }
 }
