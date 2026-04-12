@@ -1,3 +1,5 @@
+package com.movies;
+
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -34,13 +36,14 @@ import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Following {
 
     public Scene createFollowingScene(Stage stage) {
-        ArrayList<String> followingList = DatabaseHandler.getFollowings(Main.currentUser.getUsername());
-        ArrayList<String> followersList = DatabaseHandler.getFollowers(Main.currentUser.getUsername());
+        ArrayList<String> followingList = DatabaseHandler.getFollowings(App.currentUser.getUsername());
+        ArrayList<String> followersList = DatabaseHandler.getFollowers(App.currentUser.getUsername());
         HBox topMenu = new TopMenu().createTopMenu(stage);
         AnchorPane.setTopAnchor(topMenu, 10.0);
         AnchorPane.setLeftAnchor(topMenu, 5.0);
@@ -72,7 +75,7 @@ public class Following {
 
             final Button btn;
             if (followersList.contains(following)) { //friends
-                Button btn = new Button("Chat");
+                btn = new Button("Chat");
                 btn.setOnAction(new EventHandler<ActionEvent>() {
                     public void handle(ActionEvent event) {
                         //switch to chat scene
@@ -85,7 +88,7 @@ public class Following {
             Button unfbtn = new Button("Unfollow");
             unfbtn.setOnAction(new EventHandler<ActionEvent>() {
                 public void handle(ActionEvent event) {
-                    DatabaseHandler.stopFollowing(Main.currentUser.getUsername(), following);
+                    DatabaseHandler.stopFollowing(App.currentUser.getUsername(), following);
                     listVBox.getChildren().remove(userRow); //removal from ui
                 }
             });
