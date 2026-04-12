@@ -6,11 +6,12 @@ mutual interest and respect. It is a desktop app where you can log the movies yo
 rate, review and recommend movies, find contacts and chat with them or read about films and
 latest news in the film industry; all without the need of another app.
 
-# Execution Instructions:
+
+### Execution Instructions:
 Open VSCode. Run App.java 
 
-# Dependencies:
+### Dependencies:
 JavaFX, Scene Builder, MySQL
 
-# Database Setup:
+### Database Setup:
 ...
