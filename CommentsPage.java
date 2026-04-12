@@ -61,13 +61,14 @@ public class CommentsPage {
             backBtn.setOnAction(e -> {
                 try {
                     Stage currentStage = (Stage) backBtn.getScene().getWindow();
+
                     MoviePage moviePage = new MoviePage();
-                    moviePage.setData(currentUser, currentMovie);
-                    
                     Scene movieScene = moviePage.createAboutMovieScene(currentStage);
+                    moviePage.setData(currentUser, currentMovie);
+
                     currentStage.setScene(movieScene);
                     currentStage.setFullScreen(true);
-                    
+
                 } catch (Exception ex) {
                     System.out.println("cant go back to movie page");
                     ex.printStackTrace();
