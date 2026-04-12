@@ -1,147 +1,153 @@
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
-import javafx.geometry.Pos;
-import javafx.scene.layout.Region;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+package com.movies;
 
 import java.util.ArrayList;
 
-import com.movies.DatabaseHandler;
-
-import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.Scene;
-import javafx.scene.layout.AnchorPane;
-import javafx.stage.Stage;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToggleGroup;
 
 public class CreateNewGroupChat {
-    public  Scene createNewGroupChatScene(Stage stage) {
+
+    public Scene createNewGroupChatScene(Stage stage) {
         AnchorPane root = new AnchorPane();
+
         HBox topMenu = new TopMenu().createTopMenu(stage);
         AnchorPane.setTopAnchor(topMenu, 10.0);
         AnchorPane.setLeftAnchor(topMenu, 5.0);
         AnchorPane.setRightAnchor(topMenu, 5.0);
 
-        AnchorPane contentBox = new AnchorPane();
-        contentBox.setPadding(new Insets(20));
-        AnchorPane.setTopAnchor(contentBox, 55.0);
-        AnchorPane.setLeftAnchor(contentBox, 15.0);
-        AnchorPane.setRightAnchor(contentBox, 15.0);
-        AnchorPane.setBottomAnchor(contentBox, 15.0);
-        Label newGroupChatLbl = new Label("New Group Chat");
+        VBox contentBox = new VBox(18);
+        contentBox.setPadding(new Insets(25));
+        contentBox.setAlignment(Pos.TOP_CENTER);
+        AnchorPane.setTopAnchor(contentBox, 60.0);
+        AnchorPane.setLeftAnchor(contentBox, 20.0);
+        AnchorPane.setRightAnchor(contentBox, 20.0);
+        AnchorPane.setBottomAnchor(contentBox, 20.0);
 
-        AnchorPane.setTopAnchor(newGroupChatLbl, 20.0);
-        AnchorPane.setLeftAnchor(newGroupChatLbl, 20.0);
-        newGroupChatLbl.setStyle("-fx-font-size: 30px;"); 
-        TextField chatName = new TextField();
-        chatName.setPromptText("Write Group Name...");
-        chatName.setOnAction(e -> {
-        String groupName = chatName.getText();
-    });
+        HBox titleRow = new HBox(10);
+        titleRow.setAlignment(Pos.CENTER_LEFT);
 
+        Button backBtn = new Button("<");
+        backBtn.setOnAction(e -> stage.setScene(new MyChats().createMyChatsScene(stage)));
 
-        AnchorPane.setTopAnchor(chatName, 70.0);
-        AnchorPane.setLeftAnchor(chatName, 20.0);
-        AnchorPane.setRightAnchor(chatName, 20.0);
+        Label title = new Label("Create New Group Chat");
+        title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
 
-        ToggleGroup publicOrPriv = new ToggleGroup();
+        titleRow.getChildren().addAll(backBtn, title);
+
+        VBox formBox = new VBox(14);
+        formBox.setMaxWidth(420);
+        formBox.setAlignment(Pos.CENTER_LEFT);
+
+        Label nameLbl = new Label("Chat Name");
+        TextField chatNameField = new TextField();
+        chatNameField.setPromptText("Enter group chat name");
+
+        Label privacyLbl = new Label("Privacy");
+
+        HBox privacyBox = new HBox(10);
+        privacyBox.setAlignment(Pos.CENTER_LEFT);
+
         ToggleButton publicBtn = new ToggleButton("Public");
-        AnchorPane.setTopAnchor(publicBtn, 120.0);
-        AnchorPane.setLeftAnchor(publicBtn, 20.0);
-        publicBtn.setToggleGroup(publicOrPriv);
-        publicBtn.setSelected(true);
-        boolean isPublic = true;
-        publicBtn.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent e) {
-                isPublic = true;
-            }
-        });
         ToggleButton privateBtn = new ToggleButton("Private");
-        AnchorPane.setTopAnchor(privateBtn, 120.0);
-        AnchorPane.setLeftAnchor(privateBtn, 120.0);
-        privateBtn.setToggleGroup(publicOrPriv);
 
-        privateBtn.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent e) {
-                isPublic = false;
-            }
-        });
-        isPublic=!isPublic;
-        Label choosePPLabel = new Label("Choose a Profile Photo:");
-        choosePPLabel.setStyle("-fx-font-size: 20px;");
-        AnchorPane.setTopAnchor(choosePPLabel, 160.0);
-        AnchorPane.setLeftAnchor(choosePPLabel, 20.0);
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        int col = 0, row = 0;
-        ArrayList<Button> buttons = new ArrayList<Button>();
-        for (ProfilePhoto photo : ProfilePhoto.values()) {
-            ImageView img = new ImageView(new Image(photo.getUrl()));
-            img.setFitWidth(50);
-            img.setFitHeight(50);
-            Button btn = new Button();
-            btn.setGraphic(img);
-            buttons.add(btn);
-            btn.setOnAction(new EventHandler<ActionEvent>() {
-                public void handle(ActionEvent e) {
-                    //idkkkkk
-                    //DatabaseHandler.setChatPhoto()
-                    for (Button b : buttons) {
-                        b.setDisable(true);
-                    }
-                }
-            });
+        ToggleGroup privacyGroup = new ToggleGroup();
+        publicBtn.setToggleGroup(privacyGroup);
+        privateBtn.setToggleGroup(privacyGroup);
+        publicBtn.setSelected(true);
 
-            grid.add(btn, col, row);
+        privacyBox.getChildren().addAll(publicBtn, privateBtn);
 
-            col++;
-            if (col == 4) {
-                col = 0;
-                row++;
-            }
-        }
-        HBox colorIconsForPP = new HBox(10);
-        AnchorPane.setTopAnchor(colorIconsForPP, 200.0);
-        AnchorPane.setLeftAnchor(colorIconsForPP, 20.0);
-        HBox otherPPOptions = new HBox(10);
-        AnchorPane.setTopAnchor(otherPPOptions, 240.0);
-        AnchorPane.setLeftAnchor(otherPPOptions, 20.0);
-        Button searchMembers = new Button("Search to Add Members...");
-        AnchorPane.setLeftAnchor(searchMembers, 20.0);
-        AnchorPane.setRightAnchor(searchMembers, 20.0);
-        AnchorPane.setTopAnchor(searchMembers, 400.0);
-        searchMembers.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent e) {
-                ArrayList<String> members = new ArrayList<>();
-                ArrayList<Boolean> roles = new ArrayList<>();
-                members.add(Main.currentUser.getUsername());
-                roles.add(true);
-                DatabaseHandler.createNewChat(groupName, members, roles, isPublic);
-                stage.setScene(new MemberSelectionGroupChat().createMemberSelectionGroupChatscene(stage));
-            }
-        });
-        contentBox.getChildren().addAll(newGroupChatLbl, chatName, publicBtn, privateBtn, choosePPLabel, colorIconsForPP,
-                otherPPOptions, searchMembers);
+        Label infoLbl = new Label("You will be added as the first member and admin.");
+        infoLbl.setStyle("-fx-text-fill: gray;");
+
+        Button createBtn = new Button("Create Chat");
+        createBtn.setPrefWidth(160);
+
+        Button chooseMembersBtn = new Button("Choose Members");
+        chooseMembersBtn.setPrefWidth(160);
+
+        HBox buttonRow = new HBox(12);
+        buttonRow.setAlignment(Pos.CENTER_LEFT);
+        buttonRow.getChildren().addAll(createBtn, chooseMembersBtn);
+
+        formBox.getChildren().addAll(
+                nameLbl,
+                chatNameField,
+                privacyLbl,
+                privacyBox,
+                infoLbl,
+                buttonRow
+        );
+
+        Region spacer = new Region();
+        VBox.setVgrow(spacer, Priority.ALWAYS);
+
+        contentBox.getChildren().addAll(titleRow, formBox, spacer);
         root.getChildren().addAll(topMenu, contentBox);
-        return new Scene(root);
+
+        createBtn.setOnAction(e -> {
+            String chatName = chatNameField.getText() == null ? "" : chatNameField.getText().trim();
+
+            if (chatName.isEmpty()) {
+                showWarning("Chat name cannot be empty.");
+                return;
+            }
+
+            ArrayList<String> members = new ArrayList<>();
+            ArrayList<Boolean> adminRoles = new ArrayList<>();
+
+            members.add(App.currentUser.getUsername());
+            adminRoles.add(true);
+
+            boolean isPrivate = privateBtn.isSelected();
+
+            Integer createdChatId = DatabaseHandler.createNewChat(chatName, members, adminRoles, isPrivate);
+
+            if (createdChatId == null) {
+                showWarning("Chat could not be created.");
+                return;
+            }
+
+            App.currentChat = createdChatId;
+            stage.setScene(new InsideChat(createdChatId, App.currentUser.getUsername()).createInsideChatScene(stage));
+        });
+
+        chooseMembersBtn.setOnAction(e -> {
+            String chatName = chatNameField.getText() == null ? "" : chatNameField.getText().trim();
+
+            if (chatName.isEmpty()) {
+                showWarning("Enter chat name first.");
+                return;
+            }
+
+            boolean isPrivate = privateBtn.isSelected();
+
+            stage.setScene(
+                new MemberSelectionGroupChat(chatName, isPrivate).createMemberSelectionGroupChatScene(stage)
+            );
+        });
+
+        return new Scene(root, 800, 600);
+    }
+
+    private void showWarning(String text) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Warning");
+        alert.setHeaderText(null);
+        alert.setContentText(text);
+        alert.showAndWait();
     }
 }
