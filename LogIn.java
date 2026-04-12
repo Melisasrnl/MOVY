@@ -57,44 +57,46 @@ public class LogIn{
         });
 
         //Setting the button action hansler that will go to the home page
-        continueBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event){
-                
-                String name = usernameTxt.getText();
-                String password = passwordTxt.getText();
+continueBtn.setOnAction(new EventHandler<ActionEvent>() {
+    @Override
+    public void handle(ActionEvent event){
 
-                if(DatabaseHandler.isValidateLogin(name, password)){
+        String name = usernameTxt.getText();
+        String password = passwordTxt.getText();
 
-                    try {
-                        MainPage mainPage = new MainPage();
-                        Scene nextScene;
-                        nextScene = mainPage.createMainPageScene(primaryStage);
-                        String email = DatabaseHandler.userStringGetter("email", "username", name);
-                        
-                        
-                        App.currentUser = new User(name, email);
-                        
-                        String ppURL = DatabaseHandler.userStringGetter("profilepic", "username", name);
+        if(DatabaseHandler.isValidateLogin(name, password)){
 
-                        if (ppURL != null && !ppURL.equals("userstringnotfound")) {
-                            ProfilePhoto profilePhoto = ProfilePhoto.fromString(ppURL);
-                            App.currentUser.setProfilePhoto(profilePhoto);
-                        }
-                        mainPage.setData(App.currentUser, null);
-                        primaryStage.setScene(nextScene);
-                        primaryStage.setFullScreen(true);
-                        primaryStage.show();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    
+            try {
+                String email = DatabaseHandler.userStringGetter("email", "username", name);
+
+                App.currentUser = new User(name, email);
+
+                String ppURL = DatabaseHandler.userStringGetter("profilepic", "username", name);
+                if (ppURL != null && !ppURL.equals("userstringnotfound") && !ppURL.isBlank()) {
+                    ProfilePhoto profilePhoto = ProfilePhoto.fromString(ppURL);
+                    App.currentUser.setProfilePhoto(profilePhoto);
+                } else {
+                    App.currentUser.setProfilePhoto(ProfilePhoto.DEFAULT);
                 }
-                else{
-                    warning.showAndWait();
-                }
+
+                MainPage mainPage = new MainPage();
+                Scene nextScene = mainPage.createMainPageScene(primaryStage);
+                mainPage.setData(App.currentUser, null);
+
+                primaryStage.setScene(nextScene);
+                primaryStage.setFullScreen(true);
+                primaryStage.show();
+
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        });
+
+        }
+        else{
+            warning.showAndWait();
+        }
+    }
+});
 
         Scene root2= new Scene(centerBox);
         primaryStage.setFullScreen(true);
