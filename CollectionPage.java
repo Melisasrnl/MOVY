@@ -1,13 +1,17 @@
 package com.movies;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -19,40 +23,12 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class CollectionPage {
-    private ArrayList<Collection> collections;
+    String userName;
+    private ArrayList<String> collectionNames;
     private ScrollPane scrollPane;
 
-    public CollectionPage(){
-        collections = new ArrayList<>();
-        Collection a = new Collection("Girl Nights", true);
-        a.addMovie("La La Land");
-        a.addMovie("The NoteBook");
-        a.addMovie("Hamnet");
-        a.addMovie("Kill Bill: Volume 1");
-        a.addMovie("About Time");
-        a.addMovie("13 Going on 30");
-
-        Collection b = new Collection("Empty", false);
-
-        Collection c = new Collection("Rewatchables", true);
-        c.addMovie("Batman: The Dark Knight");
-        c.addMovie("Batman Begins");
-        c.addMovie("Batman: The Dark Knight Rises");
-
-        Collection d = new Collection("SpecialC", false);
-        d.addMovie("Whiplash");
-        d.addMovie("Requiem for A Dream");
-
-        Collection e = new Collection("Collection1", true);
-        e.addMovie("Whiplash");
-        e.addMovie("Requiem for A Dream");
-        e.addMovie("Batman: The Dark Knight Rises");
-
-        collections.add(a);
-        collections.add(b);
-        collections.add(c);
-        collections.add(d);
-        collections.add(e);
+    public CollectionPage(String userName) {
+        this.userName = userName;
     }
 
     public Scene createCollectionsPage(Stage stage){
@@ -90,15 +66,19 @@ public class CollectionPage {
         
         cols.getChildren().addAll(topMenu, title);
 
-        for (Collection col : collections) {
-            cols.getChildren().add(createCollection(stage, col));
+        collectionNames = DatabaseHandler.getCollections(userName);
+        for (String s : collectionNames) {
+            boolean isPrivate = DatabaseHandler.isCollectionPrivate(userName, s);
+            VBox col = createCollection(stage, s, isPrivate);
+            cols.getChildren().add(col);
         }
 
         Scene page = new Scene(scrollPane, 800,600);
         return page;
     }
 
-    public VBox createCollection(Stage stage, Collection c){
+    public VBox createCollection(Stage stage, String collectionName, boolean isPrivate){
+        Collection c = new Collection(userName, collectionName, isPrivate);
         VBox aCollection = new VBox();
         aCollection.setStyle("-fx-background-color: #b2b1ae;");
 
@@ -107,17 +87,18 @@ public class CollectionPage {
         colNameBox.setAlignment(Pos.CENTER);
         colNameBox.setPadding(new Insets(5));
 
-        Label colName = new Label(c.getName());
+        Label colName = new Label(collectionName);
         colName.setFont(new Font(15));
         colName.setTextFill(Color.BEIGE);
 
         Label privacy;
-        if(c.isPublic()){
+        if(!isPrivate){
             privacy = new Label(" (Public)");
         }
         else{
             privacy = new Label(" (Private)");
         }
+
         privacy.setTextFill(Color.BEIGE);
 
         Button seeAllButton = new Button("See All>");
@@ -135,19 +116,29 @@ public class CollectionPage {
         HBox movies = new HBox();
         movies.setPadding(new Insets(10));
         movies.setSpacing(20);
-        for(String movie : c.getMovies()){
-            movies.getChildren().add(new Rectangle(120,160));
+        for (Integer movieId : c.getMovieIDs()) {
+
+            String posterPath = TmdbService.getMoviePhotoUrl(movieId);
+            Image image = new Image(posterPath, 120, 160, true, true);
+            ImageView posterView = new ImageView(image);
+            
+            movies.getChildren().add(posterView);
         }
 
         aCollection.getChildren().addAll(colNameBox, movies);
 
         return aCollection;
     }
-    public void removeCollection(Collection c){
-        collections.remove(c);
-    }
 
-    public ArrayList<Collection> getCollections(){
+    public ArrayList<Collection> getCollections() {
+        ArrayList<Collection> collections = new ArrayList<>();
+        ArrayList<String> names = DatabaseHandler.getCollections(userName);
+
+        for (String name : names) {
+            boolean isPrivate = DatabaseHandler.isCollectionPrivate(userName, name);
+            collections.add(new Collection(userName, name, isPrivate));
+        }
+
         return collections;
     }
 }
