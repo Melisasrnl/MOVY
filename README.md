@@ -23,4 +23,4 @@ In order to run the program properly, follow the steps below:
 JavaFX is used for the interface. Also Scene Builder is used for home, about movie and comments pages.
 
 ### About Database:
-...
+For this app 2 database were used. One of them was created manualy. After opening a public server from aiven.com we created a new database from MYSQL. The database is connected to our app which the users use to save movies in collections, chat, follow, create new users and more. The methods of this database is written in the class: DatabaseHandler. To reach to movies and their informations we used the database TMDB. After getting an API key and connecting it to our app we wrote the neccessary methods to our class: TmdbService. We used these databases to get and save informations of our app.
