@@ -33,10 +33,10 @@ public class TopMenu {
         topMenu.setPadding(new Insets(5));
         topMenu.setAlignment(Pos.CENTER_LEFT);
 
-        ProfilePhoto userPP = Main.currentUser.getProfilePhoto();
-        Circle userPPCircle = userPP.ProfilePhoto().createCircle(18);
+        ProfilePhoto userPP = App.currentUser.getProfilePhoto();
+        Circle userPPCircle = userPP.createCircle(18);
 
-        Button userButton = new Button(Main.currentUser.getUsername());
+        Button userButton = new Button(App.currentUser.getUsername());
         userButton.setStyle("-fx-background-color: #0B0F1A; -fx-text-fill: white;");
         userButton.setPrefSize(83, 40);
         userButton.setMaxWidth(Double.MAX_VALUE);
@@ -51,7 +51,14 @@ public class TopMenu {
         homeButton.setPrefSize(26, 40);
         homeButton.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                stage.setScene(new MainPage().createMainPageScene(stage));
+                try {
+                    MainPage mainPage = new MainPage();
+                    Scene mainScene = mainPage.createMainPageScene(stage);                   
+                    mainPage.setData(App.currentUser, null); 
+                    stage.setScene(mainScene);
+                } catch (Exception e) {
+                    System.out.println("error when going to homePage from topMenu " + e.getMessage());
+                }
             }
         });
 
@@ -68,7 +75,7 @@ public class TopMenu {
         searchButton.setPrefSize(66, 40);
         searchButton.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent event) {
-               stage.setScene(new SearchEngine().choose(stage));
+              stage.setScene(new SearchEngine().choose(stage, App.currentUser));
             }
         });
 
@@ -108,4 +115,3 @@ public class TopMenu {
     }
 
 }
-
