@@ -1,9 +1,14 @@
+package com.movies;
+
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.geometry.Pos;
 import javafx.scene.layout.Region;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+
+import java.util.ArrayList;
+
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -64,7 +69,7 @@ public class EditProfile {
         AnchorPane.setTopAnchor(returnToProfile, 0.0);
         AnchorPane.setLeftAnchor(returnToProfile, -15.0);
 
-        ImageView userPPCircle = new ImageView(new Image(Main.currentUser.getProfilePhoto().getUrl()));
+        ImageView userPPCircle = new ImageView(new Image(App.currentUser.getProfilePhoto().getUrl()));
         userPPCircle.setFitWidth(54);
         userPPCircle.setFitHeight(54);
         Circle clip = new Circle(27, 27, 27);
@@ -73,11 +78,11 @@ public class EditProfile {
         AnchorPane.setTopAnchor(userPPCircle, 20.0);
         AnchorPane.setLeftAnchor(userPPCircle, 15.0);
 
-        Label username = new Label(Main.currentUser.getUsername());
+        Label username = new Label(App.currentUser.getUsername());
         AnchorPane.setTopAnchor(username, 30.0);
         AnchorPane.setLeftAnchor(username, 80.0);
 
-        Label bio = new Label(Main.currentUser.getBio());
+        Label bio = new Label(App.currentUser.getBio());
         AnchorPane.setTopAnchor(bio, 50.0);
         AnchorPane.setLeftAnchor(bio, 80.0);
 
@@ -128,7 +133,7 @@ public class EditProfile {
             buttons.add(btn);
             btn.setOnAction(new EventHandler<ActionEvent>() {
                 public void handle(ActionEvent e) {
-                    Main.currentUser.setProfilePhoto(photo);
+                    App.currentUser.setProfilePhoto(photo);
                     for (Button b : buttons) {
                         b.setDisable(true);
                     }
@@ -172,8 +177,8 @@ public class EditProfile {
                 deleteBtn.setOnAction(new EventHandler<ActionEvent>() {
                     public void handle(ActionEvent event) {
                         popupStage.close();
-                        DatabaseHandler.deleteUser(Main.currentUser.getUsername());
-                        stage.setScene(new StartingPage().start(stage));
+                        DatabaseHandler.deleteUser(App.currentUser.getUsername());
+                        //stage.setScene(new StartingPage().start(stage));
                     }
                 });
 
