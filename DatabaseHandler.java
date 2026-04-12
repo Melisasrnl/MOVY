@@ -18,6 +18,7 @@ import java.util.ArrayList;
 public class DatabaseHandler {
 
     //These are the information of our database to set the database url
+    // DB bağlantı bilgileri
     
 
     //Combining the information above to form the database url
@@ -1315,51 +1316,39 @@ public class DatabaseHandler {
     //Create new chat. dont forget to get users ArrayList. the admin booleans are also kept as arraylists where the indexes match with the members lists indexes.
     //for example the 1st user in the members arrays role is the 1st boolean in memberroles list. 
     //if its true they are admin if false they are not.
-    public static boolean createNewChat(String chatname, ArrayList<String> members, ArrayList<Boolean> memberRoles, Boolean isPrivate){
 
-        String sqlone;
-        String sqltwo = "INSERT INTO chats (chatname, membercount, isprivate) VALUES (?,?,?)";
-        try(Connection conn = connect();
+ public static Integer createNewChat(String chatname, ArrayList<String> members, ArrayList<Boolean> memberRoles, Boolean isPrivate){
+
+    String sqltwo = "INSERT INTO chats (chatname, membercount, isprivate) VALUES (?,?,?)";
+
+    try(Connection conn = connect();
         PreparedStatement pstmt = conn.prepareStatement(sqltwo);
         Statement stmt = conn.createStatement()){
 
-            pstmt.setString(1, chatname);
-            pstmt.setInt(2, members.size());
-            pstmt.setBoolean(3, isPrivate);
+        pstmt.setString(1, chatname);
+        pstmt.setInt(2, 0);
+        pstmt.setBoolean(3, isPrivate);
+        pstmt.executeUpdate();
 
-            pstmt.executeUpdate();
-            ResultSet rs = stmt.executeQuery("SELECT LAST_INSERT_ID");
+        ResultSet rs = stmt.executeQuery("SELECT LAST_INSERT_ID()");
+        rs.next();
+        int id = rs.getInt(1);
 
-            rs.next();
-            int id = rs.getInt(1);
+        createChatsMessagesTable(id);
+        createChatsUsersTable(id);
 
-            createChatsMessagesTable(id);
-            createChatsUsersTable(id);
-
-            for(int i = 0; i < members.size(); i++){
-
-                sqlone = "INSERT INTO " + members.get(i) + "schats (chatid) VALUES (?)";
-
-                try(PreparedStatement pstmtone = conn.prepareStatement(sqlone)){
-                    pstmtone.setInt(1, id);
-
-                    pstmtone.executeUpdate();
-                }
-
-                addUserToChat(id, members.get(i), memberRoles.get(i));
-
-            }
-
-            return true;
-
-        }catch(SQLException e){
-            System.out.println("CREATE CHAT ERROR: " + e.getMessage());
+        for(int i = 0; i < members.size(); i++){
+            addUserToChat(id, members.get(i), memberRoles.get(i));
         }
 
-        return false;
-        
+        return id;
+
+    }catch(SQLException e){
+        System.out.println("CREATE CHAT ERROR: " + e.getMessage());
     }
 
+    return null;
+}
     //add new user
     public static boolean addUserToChat(Integer chatID, String user, Boolean isAdmin){
         String sql = "INSERT INTO " + chatID + "susers (username,isadmin) VALUES (?,?)";
@@ -1547,7 +1536,7 @@ public class DatabaseHandler {
     //Create chats messages table
     private static void createChatsMessagesTable(Integer chatID){
 
-        String sql = "CREATE TABLE IF NOT EXISTS " + chatID + "smessages (id INTEGER PRIMERY KEY AUTO_INCREMENT,"
+        String sql = "CREATE TABLE IF NOT EXISTS " + chatID + "smessages (id INTEGER PRIMARY KEY AUTO_INCREMENT,"
         + "sendername VARCHAR(50) NOT NULL,"
         + "message VARCHAR(500) NOT NULL);";
 
@@ -1982,7 +1971,62 @@ public class DatabaseHandler {
 
         return " ";
     }
+    public static ArrayList<String[]> getMessages(Integer chatId) {
+        String sql = "SELECT sendername, message FROM " + chatId + "smessages";
+        ArrayList<String[]> messages = new ArrayList<>();
 
+        try (Connection conn = connect();
+            Statement stmt = conn.createStatement()) {
+
+            ResultSet rs = stmt.executeQuery(sql);
+
+            while (rs.next()) {
+                messages.add(new String[]{rs.getString("sendername"), rs.getString("message")});
+            }
+
+        } catch (SQLException e) {
+            System.out.println("GET MESSAGES ERROR: " + e.getMessage());
+        }
+
+        return messages;
+    }
+
+    public static ArrayList<Integer> getAllChatIds() {
+        String sql = "SELECT id FROM chats";
+        ArrayList<Integer> ids = new ArrayList<>();
+
+        try (Connection conn = connect();
+            Statement stmt = conn.createStatement()) {
+
+            ResultSet rs = stmt.executeQuery(sql);
+
+            while (rs.next()) {
+                ids.add(rs.getInt(1));
+            }
+        } catch (SQLException e) {
+            System.out.println("GET ALL CHAT IDS ERROR: " + e.getMessage());
+        }
+
+        return ids;
+    }
+
+    public static ArrayList<String> getAllUsernames() {
+        String sql = "SELECT username FROM users";
+        ArrayList<String> list = new ArrayList<>();
+
+        try (Connection conn = connect();
+            Statement stmt = conn.createStatement()) {
+
+            ResultSet rs = stmt.executeQuery(sql);
+
+            while (rs.next()) {
+                list.add(rs.getString(1));
+            }
+        } catch (SQLException e) {
+            System.out.println("GET ALL USERNAMES ERROR: " + e.getMessage());
+        }
+
+        return list;
+    }
     
 }
-
