@@ -196,7 +196,7 @@ public class MainPage {
         
         ArrayList<Integer> popularsIDs = TmdbService.getPopularMovies();
 
-        int movieNumber = Math.min(20, popularsIDs.size());
+        int movieNumber = Math.min(15, popularsIDs.size());
 
         for (int i = 0; i < movieNumber; i++) {
             Integer movieId = popularsIDs.get(i);
@@ -227,7 +227,7 @@ public class MainPage {
         
         ArrayList<Integer> latestsIDs = TmdbService.getLatestReleasesMovies();
 
-        int movieNumber = Math.min(20, latestsIDs.size());
+        int movieNumber = Math.min(15, latestsIDs.size());
 
         for (int i = 0; i < movieNumber; i++) {
             Integer movieId = latestsIDs.get(i);

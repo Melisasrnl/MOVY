@@ -70,7 +70,7 @@
                         </HBox>
                     </VBox>
 
-                    <!--   Latest Releases ── -->
+                    
                     <VBox spacing="10.0">
                         <Label text="Latest Releases"
                                style="-fx-text-fill: white;
