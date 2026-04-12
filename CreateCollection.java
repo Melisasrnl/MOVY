@@ -2,7 +2,6 @@ package com.movies;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -16,7 +15,14 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class CreateCollection {
-   public StackPane createNewCol(Stage stage, AnchorPane root, CollectionPage cp){
+    private String username;
+
+    public CreateCollection(String username){
+        this.username = username;
+    }
+
+    public StackPane createNewCol(Stage stage, AnchorPane root, CollectionPage cp){
+    
         StackPane overlay = new StackPane();
         overlay.setStyle("-fx-background-color: rgba(0,0,0,0.5);");
 
@@ -44,15 +50,18 @@ public class CreateCollection {
         publicBtn.setToggleGroup(group);
         privateBtn.setToggleGroup(group);
 
-        publicBtn.setSelected(true);
+        privateBtn.setSelected(true);
 
         Button createButton = new Button("Create");
         createButton.setOnAction(e -> {
-            if(input.getText()!=null){
-                boolean isPublic = publicBtn.isSelected();
-                Collection c = new Collection(input.getText(), isPublic);
-                cp.getCollections().add(c);
-                root.getChildren().remove(overlay);
+            String name = input.getText();
+            if (name != null && !name.isBlank()) {
+                boolean isPrivate = privateBtn.isSelected();
+                boolean created = DatabaseHandler.newCollection(name, username, isPrivate);
+                if (created) {
+                    root.getChildren().remove(overlay);
+                    stage.setScene(cp.createCollectionsPage(stage));
+                }
             }
         });
 
@@ -63,6 +72,7 @@ public class CreateCollection {
 
         popup.getChildren().addAll(title, input, pButtons, createButton, cancelButton);
         overlay.getChildren().add(popup);
+        overlay.setAlignment(Pos.CENTER);
 
         return overlay;
    } 
