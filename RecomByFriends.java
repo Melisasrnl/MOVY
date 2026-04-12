@@ -6,9 +6,10 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
@@ -17,17 +18,20 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class RecomByFriends {
     private String username;
-    private String favs = "Recommended by Friends";
-    private ArrayList<String> movies = new ArrayList<>();
+    private ArrayList<Integer> movieIDs;
+
+    public RecomByFriends(String username){
+        this.username = username;
+        this.movieIDs = DatabaseHandler.getMoviesFromRecomendedByFriends(username);
+    }
 
     //ui for the favorites
-    public Scene showRecentWatches(Stage stage){
+    public Scene showRBF(Stage stage){
         HBox topMenu = new TopMenu().createTopMenu(stage);
         StackPane root = new StackPane();
         root.setStyle("-fx-background-color: #b2b1ae;");
@@ -44,58 +48,15 @@ public class RecomByFriends {
             stage.setScene(page.createProfilePageScene(stage));
         });
 
-        Label title = new Label(this.favs);
+        Label title = new Label("Recommended by Friends");
         title.setTextFill(Color.BEIGE);
         title.setFont(new Font(18));
-
-        Button edit = new Button("Edit");
-        edit.setOnAction(e -> {
-            StackPane overlay = new StackPane();
-            VBox popup = new VBox(15);
-            popup.setPadding(new Insets(20));
-            popup.setAlignment(Pos.CENTER);
-            popup.setStyle("-fx-background-color: #2c2727; -fx-background-radius: 10;");
-
-            popup.setMaxWidth(300);
-            popup.setMaxHeight(200);
-
-            Label prompt = new Label("Choose movie to remove from your WatchList:");
-            prompt.setTextFill(Color.WHITE);      
-            
-            ChoiceBox <String> movieList = new ChoiceBox<>();
-            for(String s: this.movies){
-                movieList.getItems().add(s);
-            }
-            HBox buttons = new HBox();
-            buttons.setAlignment(Pos.CENTER);
-            buttons.setSpacing(10);
-
-            Button removeButton = new Button("Remove");
-            removeButton.setOnAction(ev -> {
-                String selected = movieList.getValue();
-                if (selected != null) {
-                    movies.remove(selected);
-                }
-                root.getChildren().remove(overlay);
-            });
-
-            Button cancelButton = new Button("Cancel");
-            cancelButton.setOnAction(ev -> {
-                root.getChildren().remove(overlay);
-            });
-            buttons.getChildren().addAll(removeButton, cancelButton);
-
-            popup.getChildren().addAll(prompt, movieList, buttons);
-            overlay.getChildren().add(popup);
-            root.getChildren().add(overlay);
-
-        });
 
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        topBar.getChildren().addAll(back, title, spacer, edit);
+        topBar.getChildren().addAll(back, title);
         VBox headerBox = new VBox();
         headerBox.getChildren().addAll(topMenu, topBar);
 
@@ -105,15 +66,20 @@ public class RecomByFriends {
         moviePane.setHgap(20);
         moviePane.setVgap(20);
 
-        for (String m : movies) {
+        for (Integer i: movieIDs) {
             VBox card = new VBox();
             card.setSpacing(5);
             card.setAlignment(Pos.CENTER);
 
-            Rectangle poster = new Rectangle(120, 160);
-            Label name = new Label(m);
+            String posterPath = TmdbService.getMoviePhotoUrl(i);
+            Image image = new Image(posterPath, 120, 160, true, true);
+            ImageView posterView = new ImageView(image);
 
-            card.getChildren().addAll(poster, name);
+            Label name = new Label(TmdbService.getMovieName(i));
+
+            Label who = new Label ("by " + DatabaseHandler.whoRecomended(username, i));
+
+            card.getChildren().addAll(posterView, name, who);
             moviePane.getChildren().add(card);
         }
 
