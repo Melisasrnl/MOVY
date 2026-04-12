@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class TmdbService {
     
-    private static final String API_KEY = "";
+    
     private static final String BASE_URL = "https://api.themoviedb.org/3";
 
     private static String connectAndGetJson(String endpoint){
