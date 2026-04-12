@@ -9,6 +9,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
@@ -23,8 +25,12 @@ import javafx.stage.Stage;
 
 public class RecentWatches {
     private String username;
-    private String favs = "Recent Watches";
-    private ArrayList<String> movies = new ArrayList<>();
+    private ArrayList<Integer> movieIDs;
+
+    public RecentWatches(String username){
+        this.username = username;
+        this.movieIDs = DatabaseHandler.getMoviesFromRecentWatches(username);
+    }
 
     //ui for the favorites
     public Scene showRecentWatches(Stage stage){
@@ -45,7 +51,7 @@ public class RecentWatches {
             stage.setScene(page.createProfilePageScene(stage));
         });
 
-        Label title = new Label(this.favs);
+        Label title = new Label("Recent Watches");
         title.setTextFill(Color.BEIGE);
         title.setFont(new Font(18));
 
@@ -63,21 +69,36 @@ public class RecentWatches {
             Label prompt = new Label("Choose movie to remove:");
             prompt.setTextFill(Color.WHITE);      
             
-            ChoiceBox <String> movieList = new ChoiceBox<>();
-            for(String s: this.movies){
-                movieList.getItems().add(s);
-            }
             HBox buttons = new HBox();
             buttons.setAlignment(Pos.CENTER);
             buttons.setSpacing(10);
 
+            ChoiceBox<Integer> movieList = new ChoiceBox<>();
+            movieList.getItems().addAll(this.movieIDs);
+
+            movieList.setConverter(new javafx.util.StringConverter<Integer>() {
+                @Override
+                public String toString(Integer movieId) {
+                    return movieId == null ? "" : TmdbService.getMovieName(movieId);
+                }
+
+                @Override
+                public Integer fromString(String string) {
+                    return null;
+                }
+            });
+
             Button removeButton = new Button("Remove");
             removeButton.setOnAction(ev -> {
-                String selected = movieList.getValue();
-                if (selected != null) {
-                    movies.remove(selected);
+                Integer selectedMovieId = movieList.getValue();
+                if (selectedMovieId != null) {
+                    boolean deleted = DatabaseHandler.deleteMovieFromRecentWatches(username, selectedMovieId);
+                    if (deleted) {
+                        movieIDs.remove(selectedMovieId);
+                        root.getChildren().remove(overlay);
+                        stage.setScene(showRecentWatches(stage));
+                    }
                 }
-                root.getChildren().remove(overlay);
             });
 
             Button cancelButton = new Button("Cancel");
@@ -106,15 +127,17 @@ public class RecentWatches {
         moviePane.setHgap(20);
         moviePane.setVgap(20);
 
-        for (String m : movies) {
+        for (Integer i: movieIDs) {
             VBox card = new VBox();
             card.setSpacing(5);
             card.setAlignment(Pos.CENTER);
 
-            Rectangle poster = new Rectangle(120, 160);
-            Label name = new Label(m);
+            String posterPath = TmdbService.getMoviePhotoUrl(i);
+            Image image = new Image(posterPath, 120, 160, true, true);
+            ImageView posterView = new ImageView(image);
+            Label name = new Label(TmdbService.getMovieName(i));
 
-            card.getChildren().addAll(poster, name);
+            card.getChildren().addAll(posterView, name);
             moviePane.getChildren().add(card);
         }
 
