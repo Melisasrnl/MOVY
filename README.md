@@ -8,10 +8,11 @@ latest news in the film industry; all without the need of another app.
 
 
 ### Execution Instructions:
-Open VSCode. Run App.java 
+Make sure you have installed Maven.
+Run App.java
 
-### Dependencies:
-JavaFX, Scene Builder, MySQL
+### About UI:
+JavaFX is used for the interface. Also Scene Builder is used for home, about movie and comments pages.
 
-### Database Setup:
+### About Database:
 ...
