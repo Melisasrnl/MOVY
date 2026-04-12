@@ -1,3 +1,5 @@
+package com.movies;
+
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -53,8 +55,8 @@ public class Followers {
         root.getChildren().add(title);
 
         VBox listVBox = new VBox(10);
-        ArrayList<String> followingList = DatabaseHandler.getFollowings(Main.currentUser.getUsername());
-        ArrayList<String> followersList = DatabaseHandler.getFollowers(Main.currentUser.getUsername());
+        ArrayList<String> followingList = DatabaseHandler.getFollowings(App.currentUser.getUsername());
+        ArrayList<String> followersList = DatabaseHandler.getFollowers(App.currentUser.getUsername());
 
         for (String follower : followersList) {
             HBox userRow = new HBox(10);
@@ -81,19 +83,19 @@ public class Followers {
                 btn = new Button("Follow Back");
                 btn.setOnAction(new EventHandler<ActionEvent>() {
                     public void handle(ActionEvent event) {
-                        DatabaseHandler.followUser(Main.currentUser.getUsername(), follower); 
+                        DatabaseHandler.followUser(App.currentUser.getUsername(), follower); 
                         HBox parent = (HBox) btn.getParent();
                         Button chatBtn = new Button("Chat");
                         chatBtn.setOnAction(new EventHandler<ActionEvent>() {
                             public void handle(ActionEvent e) {
                                 ArrayList<String> members = new ArrayList<>();
-                                members.add(Main.currentUser.getUsername());
+                                members.add(App.currentUser.getUsername());
                                 members.add(follower);
                                 ArrayList<Boolean> roles = new ArrayList<>();
                                 roles.add(false);
                                 roles.add(false);
                                 DatabaseHandler.createNewChat(follower, members,roles,true );
-                                stage.setScene(new InsideChat().createSearchChatsScene(stage)); //???
+                                //stage.setScene(new InsideChat().createSearchChatsScene(stage)); //???
                             }
                         });
                         parent.getChildren().remove(btn);
